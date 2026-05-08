@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Análisis Cualitativo con IA</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --azul:      #1a3a5c;
+      --azul-med:  #2b5f8e;
+      --azul-claro:#e8f0f8;
+      --verde:     #2e7d5e;
+      --rojo:      #c0392b;
+      --amarillo:  #d4a017;
+      --gris:      #f4f6f9;
+      --texto:     #1c2b3a;
+      --suave:     #6b7f93;
+      --blanco:    #ffffff;
+      --sombra:    0 4px 24px rgba(26,58,92,0.10);
+      --radio:     16px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--gris);
+      color: var(--texto);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--azul);
+      color: var(--blanco);
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 70px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .header-logo .icono {
+      width: 40px; height: 40px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+
+    .header-logo h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.2rem;
+      font-weight: 400;
+      letter-spacing: 0.3px;
+    }
+
+    .header-logo p {
+      font-size: 0.72rem;
+      opacity: 0.65;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .header-badge {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 0.78rem;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── MAIN ── */
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 40px 24px 60px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      margin-bottom: 40px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .hero h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.2rem;
+      color: var(--azul);
+      margin-bottom: 10px;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      color: var(--suave);
+      font-size: 1rem;
+      max-width: 560px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ── TABS ── */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 28px;
+      background: var(--blanco);
+      padding: 6px;
+      border-radius: 14px;
+      box-shadow: var(--sombra);
+      animation: fadeUp 0.6s ease 0.1s both;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      background: transparent;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--suave);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .tab.activo {
+      background: var(--azul);
+      color: var(--blanco);
+      box-shadow: 0 2px 10px rgba(26,58,92,0.25);
+    }
+
+    .tab:hover:not(.activo) {
+      background: var(--azul-claro);
+      color: var(--azul);
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--blanco);
+      border-radius: var(--radio);
+      box-shadow: var(--sombra);
+      padding: 32px;
+      margin-bottom: 24px;
+      animation: fadeUp 0.6s ease 0.2s both;
+    }
+
+    .card h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.25rem;
+      color: var(--azul);
+      margin-bottom: 6px;
+    }
+
+    .card .desc {
+      color: var(--suave);
+      font-size: 0.88rem;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    /* ── ZONA DE CARGA ── */
+    .zona-carga {
+      border: 2px dashed #c5d6e8;
+      border-radius: 12px;
+      padding: 48px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--azul-claro);
+      position: relative;
+    }
+
+    .zona-carga:hover, .zona-carga.drag-over {
+      border-color: var(--azul-med);
+      background: #d8e8f4;
+    }
+
+    .zona-carga input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .zona-carga .icono-upload { font-size: 2.5rem; margin-bottom: 12px; }
+
+    .zona-carga p {
+      color: var(--azul-med);
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .zona-carga small { color: var(--suave); font-size: 0.82rem; }
+
+    .archivo-seleccionado {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+      background: #e8f4ed;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.88rem;
+      color: var(--verde);
+      font-weight: 500;
+    }
+
+    /* ── TEXTAREA ── */
+    textarea {
+      width: 100%;
+      border: 1.5px solid #c5d6e8;
+      border-radius: 10px;
+      padding: 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      color: var(--texto);
+      resize: vertical;
+      min-height: 120px;
+      outline: none;
+      transition: border 0.2s;
+      line-height: 1.6;
+    }
+
+    textarea:focus { border-color: var(--azul-med); }
+
+    /* ── CONTEXTO ── */
+    .campo-contexto {
+      margin-top: 16px;
+    }
+
+    .campo-contexto label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--suave);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .campo-contexto input {
+      width: 100%;
+      border: 1.5px solid #c5d6e8;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      color: var(--texto);
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .campo-contexto input:focus { border-color: var(--azul-med); }
+
+    /* ── BOTÓN ── */
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 16px;
+      margin-top: 20px;
+      background: var(--azul);
+      color: var(--blanco);
+      border: none;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+
+    .btn:hover { background: var(--azul-med); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,58,92,0.25); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* ── PROGRESO ── */
+    .progreso {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .progreso-barra-wrap {
+      background: var(--azul-claro);
+      border-radius: 100px;
+      height: 8px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .progreso-barra {
+      height: 100%;
+      background: linear-gradient(90deg, var(--azul), var(--azul-med));
+      border-radius: 100px;
+      width: 0%;
+      transition: width 0.4s ease;
+      animation: pulso 1.5s ease infinite;
+    }
+
+    @keyframes pulso {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    .progreso p {
+      font-size: 0.85rem;
+      color: var(--suave);
+      text-align: center;
+    }
+
+    /* ── RESULTADOS ── */
+    #resultados { display: none; }
+
+    .res-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .res-header h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.4rem;
+      color: var(--azul);
+    }
+
+    .btn-exportar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: var(--verde);
+      color: var(--blanco);
+      border: none;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-exportar:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    /* ── MÉTRICAS ── */
+    .metricas {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .metrica {
+      background: var(--gris);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      border-left: 4px solid var(--azul);
+      transition: transform 0.2s;
+    }
+
+    .metrica:hover { transform: translateY(-2px); }
+    .metrica.positiva { border-color: var(--verde); }
+    .metrica.negativa { border-color: var(--rojo); }
+    .metrica.neutra   { border-color: var(--amarillo); }
+    .metrica.alto     { border-color: var(--rojo); }
+    .metrica.medio    { border-color: var(--amarillo); }
+    .metrica.bajo     { border-color: var(--verde); }
+
+    .metrica .numero {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.2rem;
+      color: var(--azul);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .metrica.positiva .numero { color: var(--verde); }
+    .metrica.negativa .numero { color: var(--rojo); }
+    .metrica.neutra   .numero { color: var(--amarillo); }
+    .metrica.alto     .numero { color: var(--rojo); }
+    .metrica.medio    .numero { color: var(--amarillo); }
+    .metrica.bajo     .numero { color: var(--verde); }
+
+    .metrica .etiqueta {
+      font-size: 0.78rem;
+      color: var(--suave);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── TEMAS ── */
+    .temas-wrap {
+      margin-bottom: 24px;
+    }
+
+    .temas-wrap h4 {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--suave);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .temas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tema {
+      background: var(--azul-claro);
+      color: var(--azul);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      border: 1px solid #c5d6e8;
+      animation: popIn 0.3s ease both;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    /* ── CONCLUSIÓN ── */
+    .conclusion-box {
+      background: linear-gradient(135deg, var(--azul-claro), #f0f7ff);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 16px;
+      border-left: 4px solid var(--azul);
+    }
+
+    .conclusion-box h4 {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--suave);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .conclusion-box p {
+      color: var(--texto);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* ── RESULTADO INDIVIDUAL ── */
+    .resultado-individual {
+      background: var(--gris);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 12px;
+    }
+
+    .resultado-individual .texto {
+      font-size: 0.92rem;
+      color: var(--texto);
+      margin-bottom: 10px;
+      line-height: 1.5;
+      font-style: italic;
+    }
+
+    .badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .badge.positiva { background: #e8f5ee; color: var(--verde); }
+    .badge.negativa { background: #fdecea; color: var(--rojo); }
+    .badge.neutra   { background: #fef9e7; color: var(--amarillo); }
+    .badge.alto     { background: #fdecea; color: var(--rojo); }
+    .badge.medio    { background: #fef9e7; color: var(--amarillo); }
+    .badge.bajo     { background: #e8f5ee; color: var(--verde); }
+
+    /* ── ERROR ── */
+    .error-box {
+      display: none;
+      background: #fdecea;
+      border: 1px solid #f5b7b1;
+      border-radius: 12px;
+      padding: 16px 20px;
+      color: var(--rojo);
+      font-size: 0.9rem;
+      margin-top: 16px;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ── ANIMACIONES ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      header { padding: 0 20px; }
+      main { padding: 24px 16px 40px; }
+      .hero h2 { font-size: 1.6rem; }
+      .card { padding: 20px; }
+      .tabs { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-logo">
+    <div class="icono">🧠</div>
+    <div>
+      <h1>Análisis Cualitativo con IA</h1>
+      <p>Plataforma de análisis para cualquier tema o sector</p>
+    </div>
+  </div>
+  <div class="header-badge">v2.1.0 — Powered by LLaMA 3</div>
+</header>
+
+<main>
+
+  <div class="hero">
+    <h2>Analiza respuestas abiertas<br><em>de cualquier tema</em></h2>
+    <p>Sube tu archivo de Google Forms, Microsoft Forms, CSV o Excel. La IA detecta emociones, niveles de riesgo y temas principales sin importar el contexto.</p>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab activo" onclick="cambiarTab('archivo')">
+      📁 Subir archivo
+    </button>
+    <button class="tab" onclick="cambiarTab('texto')">
+      ✍️ Texto individual
+    </button>
+  </div>
+
+  <!-- TAB ARCHIVO -->
+  <div id="tab-archivo">
+    <div class="card">
+      <h3>Subir archivo de respuestas</h3>
+      <p class="desc">Acepta archivos de Google Forms, Microsoft Forms, CSV o Excel. La IA detecta automáticamente las columnas con respuestas abiertas sin importar el tema.</p>
+
+      <div class="zona-carga" id="zona-carga">
+        <input type="file" id="input-archivo" accept=".csv,.xlsx,.xls,.json" onchange="archivoSeleccionado(this)"/>
+        <div class="icono-upload">📂</div>
+        <p>Arrastra tu archivo aquí o haz clic para seleccionar</p>
+        <small>CSV, Excel (.xlsx), JSON — Google Forms y Microsoft Forms</small>
+      </div>
+
+      <div class="archivo-seleccionado" id="archivo-sel">
+        ✅ <span id="nombre-archivo"></span>
+      </div>
+
+      <div class="campo-contexto">
+        <label>Contexto del análisis (opcional)</label>
+        <input type="text" id="contexto-archivo" value="" placeholder="Ej: encuesta de satisfacción, evaluación docente, clima laboral, feedback de clientes..."/>
+      </div>
+
+      <button class="btn" id="btn-archivo" onclick="analizarArchivo()">
+        🔍 Analizar respuestas
+      </button>
+
+      <div class="progreso" id="progreso-archivo">
+        <div class="progreso-barra-wrap">
+          <div class="progreso-barra" id="barra-archivo"></div>
+        </div>
+        <p id="texto-progreso">Analizando respuestas con IA...</p>
+      </div>
+
+      <div class="error-box" id="error-archivo">
+        ⚠️ <span id="msg-error-archivo"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB TEXTO -->
+  <div id="tab-texto" style="display:none">
+    <div class="card">
+      <h3>Analizar respuesta individual</h3>
+      <p class="desc">Escribe o pega cualquier respuesta abierta para obtener el análisis de emoción y nivel de riesgo, sin importar el tema.</p>
+
+      <textarea id="input-texto" placeholder="Escribe aquí la respuesta a analizar...&#10;&#10;Puede ser de cualquier tema: encuesta estudiantil, feedback de cliente, evaluación de empleado, comentario en redes, etc."></textarea>
+
+      <div class="campo-contexto">
+        <label>Contexto del análisis (opcional)</label>
+        <input type="text" id="contexto-texto" value="" placeholder="Ej: evaluación de servicio, clima organizacional, satisfacción de clientes..."/>
+      </div>
+
+      <button class="btn" id="btn-texto" onclick="analizarTexto()">
+        🔍 Analizar respuesta
+      </button>
+
+      <div class="progreso" id="progreso-texto">
+        <div class="progreso-barra-wrap">
+          <div class="progreso-barra" id="barra-texto"></div>
+        </div>
+        <p>Analizando con IA...</p>
+      </div>
+
+      <div class="error-box" id="error-texto">
+        ⚠️ <span id="msg-error-texto"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTADOS -->
+  <div id="resultados" class="card">
+    <div class="res-header">
+      <h3>📊 Resultados del análisis</h3>
+      <button class="btn-exportar" onclick="exportarJSON()">
+        ⬇️ Exportar JSON
+      </button>
+    </div>
+
+    <div id="contenido-resultados"></div>
+  </div>
+
+</main>
+
+<script>
+  const API = 'http://localhost:8000';
+  let datosGuardados = null;
+
+  // ── TABS ──────────────────────────────────────
+  function cambiarTab(tab) {
+    document.querySelectorAll('.tab').forEach((t, i) => {
+      t.classList.toggle('activo', (i === 0 && tab === 'archivo') || (i === 1 && tab === 'texto'));
+    });
+    document.getElementById('tab-archivo').style.display = tab === 'archivo' ? 'block' : 'none';
+    document.getElementById('tab-texto').style.display   = tab === 'texto'   ? 'block' : 'none';
+    document.getElementById('resultados').style.display  = 'none';
+  }
+
+  // ── ARCHIVO SELECCIONADO ──────────────────────
+  function archivoSeleccionado(input) {
+    if (input.files.length > 0) {
+      document.getElementById('nombre-archivo').textContent = input.files[0].name;
+      document.getElementById('archivo-sel').style.display = 'flex';
+    }
+  }
+
+  // ── DRAG AND DROP ─────────────────────────────
+  const zona = document.getElementById('zona-carga');
+  zona.addEventListener('dragover', e => { e.preventDefault(); zona.classList.add('drag-over'); });
+  zona.addEventListener('dragleave', () => zona.classList.remove('drag-over'));
+  zona.addEventListener('drop', e => {
+    e.preventDefault();
+    zona.classList.remove('drag-over');
+    const archivo = e.dataTransfer.files[0];
+    if (archivo) {
+      document.getElementById('input-archivo').files = e.dataTransfer.files;
+      archivoSeleccionado(document.getElementById('input-archivo'));
+    }
+  });
+
+  // ── PROGRESO SIMULADO ─────────────────────────
+  function iniciarProgreso(idBarra, idProgreso, idTexto) {
+    document.getElementById(idProgreso).style.display = 'block';
+    const barra = document.getElementById(idBarra);
+    let pct = 0;
+    const mensajes = [
+      'Leyendo el archivo...', 'Detectando columnas de respuestas...',
+      'Analizando emociones con IA...', 'Calculando niveles de riesgo...',
+      'Generando conclusiones...', 'Casi listo...'
+    ];
+    let mIdx = 0;
+    const intervalo = setInterval(() => {
+      pct += Math.random() * 8;
+      if (pct > 88) pct = 88;
+      barra.style.width = pct + '%';
+      if (idTexto && mIdx < mensajes.length - 1 && pct > (mIdx + 1) * 15) {
+        document.getElementById(idTexto).textContent = mensajes[++mIdx];
+      }
+    }, 600);
+    return { intervalo, barra };
+  }
+
+  function terminarProgreso({ intervalo, barra }, idProgreso) {
+    clearInterval(intervalo);
+    barra.style.width = '100%';
+    setTimeout(() => {
+      document.getElementById(idProgreso).style.display = 'none';
+      barra.style.width = '0%';
+    }, 500);
+  }
+
+  // ── ANALIZAR ARCHIVO ─────────────────────────
+  async function analizarArchivo() {
+    const input    = document.getElementById('input-archivo');
+    const contexto = document.getElementById('contexto-archivo').value.trim() || 'análisis cualitativo';
+    const btnEl    = document.getElementById('btn-archivo');
+    const errEl    = document.getElementById('error-archivo');
+
+    errEl.style.display = 'none';
+
+    if (!input.files.length) {
+      mostrarError('error-archivo', 'msg-error-archivo', 'Selecciona un archivo primero.');
+      return;
+    }
+
+    btnEl.disabled = true;
+    const prog = iniciarProgreso('barra-archivo', 'progreso-archivo', 'texto-progreso');
+
+    try {
+      const form = new FormData();
+      form.append('archivo', input.files[0]);
+
+      const res  = await fetch(`${API}/analizar-archivo?contexto=${encodeURIComponent(contexto)}`, {
+        method: 'POST', body: form
+      });
+
+      const data = await res.json();
+      terminarProgreso(prog, 'progreso-archivo');
+
+      if (!res.ok) throw new Error(data.detail || 'Error del servidor');
+
+      datosGuardados = data;
+      mostrarResultadosLote(data);
+
+    } catch (e) {
+      terminarProgreso(prog, 'progreso-archivo');
+      mostrarError('error-archivo', 'msg-error-archivo', e.message);
+    } finally {
+      btnEl.disabled = false;
+    }
+  }
+
+  // ── ANALIZAR TEXTO ───────────────────────────
+  async function analizarTexto() {
+    const texto    = document.getElementById('input-texto').value.trim();
+    const contexto = document.getElementById('contexto-texto').value.trim() || 'análisis cualitativo';
+    const btnEl    = document.getElementById('btn-texto');
+    const errEl    = document.getElementById('error-texto');
+
+    errEl.style.display = 'none';
+
+    if (!texto) {
+      mostrarError('error-texto', 'msg-error-texto', 'Escribe una respuesta para analizar.');
+      return;
+    }
+
+    btnEl.disabled = true;
+    const prog = iniciarProgreso('barra-texto', 'progreso-texto', null);
+
+    try {
+      const res  = await fetch(`${API}/analizar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ texto, contexto })
+      });
+
+      const data = await res.json();
+      terminarProgreso(prog, 'progreso-texto');
+
+      if (!res.ok) throw new Error(data.detail || 'Error del servidor');
+
+      datosGuardados = data;
+      mostrarResultadoIndividual(data, texto);
+
+    } catch (e) {
+      terminarProgreso(prog, 'progreso-texto');
+      mostrarError('error-texto', 'msg-error-texto', e.message);
+    } finally {
+      btnEl.disabled = false;
+    }
+  }
+
+  // ── MOSTRAR RESULTADOS LOTE ──────────────────
+  function mostrarResultadosLote(data) {
+    const el    = document.getElementById('contenido-resultados');
+    const total = data.total_respuestas_procesadas || 0;
+    const em    = data.emociones || {};
+    const ri    = data.niveles_riesgo || {};
+    const temas = data.temas_principales_detectados || [];
+
+    el.innerHTML = `
+      <p style="font-size:0.82rem;color:var(--suave);margin-bottom:20px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">
+        ${total} respuestas analizadas ${data.archivo ? '— ' + data.archivo : ''}
+      </p>
+
+      <h4 style="font-size:0.82rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;">Emociones detectadas</h4>
+      <div class="metricas" style="margin-bottom:24px">
+        <div class="metrica positiva">
+          <div class="numero">${em.positivas ?? 0}</div>
+          <div class="etiqueta">😊 Positivas</div>
+        </div>
+        <div class="metrica negativa">
+          <div class="numero">${em.negativas ?? 0}</div>
+          <div class="etiqueta">😟 Negativas</div>
+        </div>
+        <div class="metrica neutra">
+          <div class="numero">${em.neutras ?? 0}</div>
+          <div class="etiqueta">😐 Neutras</div>
+        </div>
+      </div>
+
+      <h4 style="font-size:0.82rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;">Niveles de riesgo</h4>
+      <div class="metricas" style="margin-bottom:24px">
+        <div class="metrica alto">
+          <div class="numero">${ri.alto ?? 0}</div>
+          <div class="etiqueta">🔴 Riesgo alto</div>
+        </div>
+        <div class="metrica medio">
+          <div class="numero">${ri.medio ?? 0}</div>
+          <div class="etiqueta">🟡 Riesgo medio</div>
+        </div>
+        <div class="metrica bajo">
+          <div class="numero">${ri.bajo ?? 0}</div>
+          <div class="etiqueta">🟢 Riesgo bajo</div>
+        </div>
+      </div>
+
+      ${temas.length ? `
+      <div class="temas-wrap">
+        <h4>Temas principales detectados</h4>
+        <div class="temas">
+          ${temas.map((t, i) => `<span class="tema" style="animation-delay:${i * 0.05}s">${t}</span>`).join('')}
+        </div>
+      </div>` : ''}
+
+      <div class="conclusion-box">
+        <h4>📋 Conclusión general</h4>
+        <p>${data.conclusion_general}</p>
+      </div>
+
+      <div class="conclusion-box" style="border-color:var(--verde);background:linear-gradient(135deg,#e8f5ee,#f0faf4)">
+        <h4>💡 Recomendación</h4>
+        <p>${data.recomendacion_general}</p>
+      </div>
+    `;
+
+    document.getElementById('resultados').style.display = 'block';
+    document.getElementById('resultados').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ── MOSTRAR RESULTADO INDIVIDUAL ─────────────
+  function mostrarResultadoIndividual(data, texto) {
+    const el = document.getElementById('contenido-resultados');
+
+    el.innerHTML = `
+      <div class="resultado-individual">
+        <div class="texto">"${texto}"</div>
+        <div class="badges">
+          <span class="badge ${data.emocion_detectada}">${data.emocion_detectada === 'positiva' ? '😊' : data.emocion_detectada === 'negativa' ? '😟' : '😐'} ${data.emocion_detectada}</span>
+          <span class="badge ${data.nivel_riesgo}">⚠️ Riesgo ${data.nivel_riesgo}</span>
+          <span class="badge" style="background:#f0f0f0;color:var(--suave)">🎯 Confianza: ${Math.round(data.confianza_modelo * 100)}%</span>
+        </div>
+      </div>
+
+      <div class="conclusion-box" style="margin-top:16px">
+        <h4>🧠 Interpretación</h4>
+        <p>${data.interpretacion}</p>
+      </div>
+
+      ${data.palabras_clave?.length ? `
+      <div class="temas-wrap" style="margin-top:16px">
+        <h4>Palabras clave</h4>
+        <div class="temas">
+          ${data.palabras_clave.map((t, i) => `<span class="tema" style="animation-delay:${i * 0.05}s">${t}</span>`).join('')}
+        </div>
+      </div>` : ''}
+    `;
+
+    document.getElementById('resultados').style.display = 'block';
+    document.getElementById('resultados').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ── ERROR ─────────────────────────────────────
+  function mostrarError(idBox, idMsg, msg) {
+    const box = document.getElementById(idBox);
+    document.getElementById(idMsg).textContent = msg;
+    box.style.display = 'flex';
+  }
+
+  // ── EXPORTAR ──────────────────────────────────
+  function exportarJSON() {
+    if (!datosGuardados) return;
+    const blob = new Blob([JSON.stringify(datosGuardados, null, 2)], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = 'analisis_cualitativo.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+</script>
+
+</body>
+</html>
