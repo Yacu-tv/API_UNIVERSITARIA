@@ -157,8 +157,8 @@ Responde solo con el JSON:"""
         }
 
 
-def generar_resumen_lote(resultados: List[dict], contexto: str) -> dict:
-    """Genera conclusión y recomendación general del lote."""
+def generar_resumen_lote(resultados: List[dict], contexto: str, temas: List[str] = []) -> dict:
+    """Genera conclusión y recomendación usando Groq según el contexto real."""
     positivas = sum(1 for r in resultados if r["emocion_detectada"] == "positiva")
     negativas = sum(1 for r in resultados if r["emocion_detectada"] == "negativa")
     neutras   = sum(1 for r in resultados if r["emocion_detectada"] == "neutra")
@@ -167,15 +167,41 @@ def generar_resumen_lote(resultados: List[dict], contexto: str) -> dict:
     riesgo_medio = sum(1 for r in resultados if r["nivel_riesgo"] == "medio")
     riesgo_bajo  = sum(1 for r in resultados if r["nivel_riesgo"] == "bajo")
 
-    if negativas > positivas:
-        conclusion    = "Predominan percepciones negativas o situaciones de malestar en la población analizada."
-        recomendacion = "Se recomienda revisar los factores que generan insatisfacción y fortalecer estrategias de mejora."
-    elif positivas > negativas:
-        conclusion    = "Predominan percepciones positivas y satisfacción general en la población analizada."
-        recomendacion = "Se recomienda mantener las buenas prácticas actuales y reforzar los factores positivos detectados."
-    else:
-        conclusion    = "Se observan percepciones mixtas o mayormente neutras en la población analizada."
-        recomendacion = "Se recomienda profundizar el análisis con entrevistas focales para obtener mayor detalle."
+    total = len(resultados)
+
+    prompt = f"""Eres un experto en análisis cualitativo. 
+Se analizaron {total} respuestas en el contexto de: {contexto}
+
+Resultados:
+- Emociones positivas: {positivas} | negativas: {negativas} | neutras: {neutras}
+- Riesgo alto: {riesgo_alto} | medio: {riesgo_medio} | bajo: {riesgo_bajo}
+- Temas principales detectados: {', '.join(temas) if temas else 'no disponibles'}
+
+Responde ÚNICAMENTE con este JSON sin texto adicional:
+{{
+  "conclusion_general": "conclusión específica de 2-3 oraciones basada en estos datos y contexto",
+  "recomendacion_general": "recomendación concreta y accionable de 2-3 oraciones adaptada al contexto"
+}}"""
+
+    try:
+        respuesta = cliente_groq.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.3,
+            max_tokens=300
+        )
+
+        contenido = respuesta.choices[0].message.content.strip()
+        contenido = contenido.replace("```json", "").replace("```", "").strip()
+        resultado = json.loads(contenido)
+
+        conclusion    = resultado.get("conclusion_general", "No se pudo generar conclusión.")
+        recomendacion = resultado.get("recomendacion_general", "No se pudo generar recomendación.")
+
+    except Exception:
+        # Fallback si Groq falla
+        conclusion    = "Se completó el análisis de las respuestas proporcionadas."
+        recomendacion = "Revisa los resultados detallados para tomar decisiones informadas."
 
     return {
         "emociones": {
@@ -355,7 +381,13 @@ def analizar_lote(data: LoteInput):
 
     conteo_general    = Counter(todas_las_palabras)
     temas_principales = [palabra for palabra, _ in conteo_general.most_common(10)]
-    resumen           = generar_resumen_lote(resultados_individuales, data.contexto)
+
+    # CORREGIDO
+    resumen = generar_resumen_lote(
+        resultados_individuales,
+        data.contexto,
+        temas_principales
+    )
 
     return {
         "total_respuestas":             len(resultados_individuales),
@@ -371,10 +403,6 @@ async def analizar_archivo(
 ):
     """
     Acepta archivos CSV, Excel (.xlsx) o JSON.
-    - CSV: detecta encoding automáticamente (utf-8, latin-1, cp1252, etc.)
-    - Excel: lee todas las hojas automáticamente
-    - Detecta columnas con respuestas abiertas sin configuración manual
-    - Funciona para cualquier tipo de encuesta o tema
     """
 
     respuestas = leer_archivo(archivo)
@@ -402,7 +430,13 @@ async def analizar_archivo(
 
     conteo_general    = Counter(todas_las_palabras)
     temas_principales = [palabra for palabra, _ in conteo_general.most_common(10)]
-    resumen           = generar_resumen_lote(resultados_individuales, contexto)
+
+    # CORREGIDO
+    resumen = generar_resumen_lote(
+        resultados_individuales,
+        contexto,
+        temas_principales
+    )
 
     return {
         "archivo":                      archivo.filename,
@@ -414,17 +448,6 @@ async def analizar_archivo(
 
 @app.post("/analizar-google-sheets")
 def analizar_google_sheets(data: GoogleSheetsInput):
-    """
-    Recibe datos exportados desde Google Sheets o Google Forms.
-    Espera una lista de diccionarios con una columna específica de respuestas.
-
-    Ejemplo de body:
-    {
-        "datos": [{"respuesta": "Me siento muy estresado"}, ...],
-        "columna_respuestas": "respuesta",
-        "contexto": "encuesta de satisfacción de clientes"
-    }
-    """
 
     if not data.datos:
         raise HTTPException(status_code=400, detail="No se recibieron datos.")
@@ -457,7 +480,13 @@ def analizar_google_sheets(data: GoogleSheetsInput):
 
     conteo_general    = Counter(todas_las_palabras)
     temas_principales = [palabra for palabra, _ in conteo_general.most_common(10)]
-    resumen           = generar_resumen_lote(resultados_individuales, data.contexto)
+
+    # CORREGIDO
+    resumen = generar_resumen_lote(
+        resultados_individuales,
+        data.contexto,
+        temas_principales
+    )
 
     return {
         "total_respuestas_procesadas":  len(resultados_individuales),
