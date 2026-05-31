@@ -1,543 +1,279 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Análisis Cualitativo con IA</title>
+  <title>Análisis Cualitativo — UAEMEX</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --azul:      #1a3a5c;
-      --azul-med:  #2b5f8e;
-      --azul-claro:#e8f0f8;
-      --verde:     #2e7d5e;
-      --rojo:      #c0392b;
-      --amarillo:  #d4a017;
-      --gris:      #f4f6f9;
-      --texto:     #1c2b3a;
-      --suave:     #6b7f93;
-      --blanco:    #ffffff;
-      --sombra:    0 4px 24px rgba(26,58,92,0.10);
-      --radio:     16px;
+      --verde:        #2d6a2d;
+      --verde-med:    #3d8b3d;
+      --verde-claro:  #e8f5e8;
+      --verde-oscuro: #1a4a1a;
+      --oro:          #c9a227;
+      --oro-claro:    #fdf6e3;
+      --oro-med:      #e6b800;
+      --rojo:         #c0392b;
+      --amarillo:     #d4a017;
+      --gris:         #f5f5f0;
+      --texto:        #1c2b1c;
+      --suave:        #5a7a5a;
+      --blanco:       #ffffff;
+      --sombra:       0 4px 24px rgba(45,106,45,0.12);
+      --radio:        16px;
     }
 
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--gris);
-      color: var(--texto);
-      min-height: 100vh;
-    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--gris); color: var(--texto); min-height: 100vh; }
 
-    /* ── HEADER ── */
+    /* HEADER */
     header {
-      background: var(--azul);
+      background: linear-gradient(135deg, var(--verde-oscuro), var(--verde));
       color: var(--blanco);
       padding: 0 40px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 70px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+      display: flex; align-items: center; justify-content: space-between;
+      height: 72px; position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 3px 16px rgba(0,0,0,0.22);
+      border-bottom: 3px solid var(--oro);
     }
 
-    .header-logo {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
+    .header-logo { display: flex; align-items: center; gap: 14px; }
 
-    .header-logo .icono {
-      width: 40px; height: 40px;
-      background: rgba(255,255,255,0.15);
-      border-radius: 10px;
+    .header-escudo {
+      width: 44px; height: 44px;
+      background: var(--oro);
+      border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 20px;
+      font-size: 22px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
 
-    .header-logo h1 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.2rem;
-      font-weight: 400;
-      letter-spacing: 0.3px;
-    }
+    .header-logo h1 { font-family: 'DM Serif Display', serif; font-size: 1.15rem; font-weight: 400; }
+    .header-logo p  { font-size: 0.7rem; opacity: 0.7; letter-spacing: 0.8px; text-transform: uppercase; }
 
-    .header-logo p {
-      font-size: 0.72rem;
-      opacity: 0.65;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
-
-    .header-badge {
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.2);
+    .header-lema {
+      background: rgba(201,162,39,0.2);
+      border: 1px solid rgba(201,162,39,0.4);
       border-radius: 20px;
       padding: 6px 16px;
-      font-size: 0.78rem;
+      font-size: 0.75rem;
+      color: var(--oro-med);
+      font-style: italic;
       letter-spacing: 0.3px;
     }
 
-    /* ── MAIN ── */
-    main {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 40px 24px 60px;
+    /* MAIN */
+    main { max-width: 980px; margin: 0 auto; padding: 36px 24px 60px; }
+
+    /* HERO */
+    .hero {
+      text-align: center; margin-bottom: 36px;
+      animation: fadeUp 0.6s ease both;
     }
 
-    /* ── HERO ── */
-    .hero {
-      text-align: center;
-      margin-bottom: 40px;
-      animation: fadeUp 0.6s ease both;
+    .hero-badge {
+      display: inline-block;
+      background: var(--oro-claro);
+      border: 1px solid var(--oro);
+      border-radius: 20px;
+      padding: 5px 16px;
+      font-size: 0.78rem;
+      color: var(--oro);
+      font-weight: 600;
+      margin-bottom: 14px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
     }
 
     .hero h2 {
       font-family: 'DM Serif Display', serif;
-      font-size: 2.2rem;
-      color: var(--azul);
-      margin-bottom: 10px;
-      line-height: 1.2;
+      font-size: 2.1rem; color: var(--verde-oscuro);
+      margin-bottom: 10px; line-height: 1.2;
     }
 
-    .hero p {
-      color: var(--suave);
-      font-size: 1rem;
-      max-width: 560px;
-      margin: 0 auto;
-      line-height: 1.6;
-    }
+    .hero h2 em { color: var(--oro); font-style: normal; }
 
-    /* ── TABS ── */
+    .hero p { color: var(--suave); font-size: 0.97rem; max-width: 540px; margin: 0 auto; line-height: 1.6; }
+
+    /* TABS */
     .tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 28px;
-      background: var(--blanco);
-      padding: 6px;
-      border-radius: 14px;
-      box-shadow: var(--sombra);
+      display: flex; gap: 8px; margin-bottom: 28px;
+      background: var(--blanco); padding: 6px;
+      border-radius: 14px; box-shadow: var(--sombra);
       animation: fadeUp 0.6s ease 0.1s both;
     }
 
     .tab {
-      flex: 1;
-      padding: 12px;
-      border: none;
-      background: transparent;
-      border-radius: 10px;
-      cursor: pointer;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.88rem;
-      font-weight: 500;
-      color: var(--suave);
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+      flex: 1; padding: 12px; border: none; background: transparent;
+      border-radius: 10px; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; font-size: 0.87rem; font-weight: 500;
+      color: var(--suave); transition: all 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
     }
 
-    .tab.activo {
-      background: var(--azul);
-      color: var(--blanco);
-      box-shadow: 0 2px 10px rgba(26,58,92,0.25);
-    }
+    .tab.activo { background: var(--verde); color: var(--blanco); box-shadow: 0 2px 10px rgba(45,106,45,0.3); }
+    .tab:hover:not(.activo) { background: var(--verde-claro); color: var(--verde); }
 
-    .tab:hover:not(.activo) {
-      background: var(--azul-claro);
-      color: var(--azul);
-    }
-
-    /* ── CARD ── */
+    /* CARD */
     .card {
-      background: var(--blanco);
-      border-radius: var(--radio);
-      box-shadow: var(--sombra);
-      padding: 32px;
-      margin-bottom: 24px;
+      background: var(--blanco); border-radius: var(--radio);
+      box-shadow: var(--sombra); padding: 32px; margin-bottom: 24px;
       animation: fadeUp 0.6s ease 0.2s both;
+      border-top: 3px solid var(--oro);
     }
 
-    .card h3 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.25rem;
-      color: var(--azul);
-      margin-bottom: 6px;
-    }
+    .card h3 { font-family: 'DM Serif Display', serif; font-size: 1.2rem; color: var(--verde-oscuro); margin-bottom: 6px; }
+    .card .desc { color: var(--suave); font-size: 0.87rem; margin-bottom: 22px; line-height: 1.5; }
 
-    .card .desc {
-      color: var(--suave);
-      font-size: 0.88rem;
-      margin-bottom: 24px;
-      line-height: 1.5;
-    }
-
-    /* ── ZONA DE CARGA ── */
+    /* ZONA CARGA */
     .zona-carga {
-      border: 2px dashed #c5d6e8;
-      border-radius: 12px;
-      padding: 48px 24px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s;
-      background: var(--azul-claro);
-      position: relative;
+      border: 2px dashed #a8c5a8; border-radius: 12px; padding: 44px 24px;
+      text-align: center; cursor: pointer; transition: all 0.2s;
+      background: var(--verde-claro); position: relative;
     }
 
-    .zona-carga:hover, .zona-carga.drag-over {
-      border-color: var(--azul-med);
-      background: #d8e8f4;
+    .zona-carga:hover, .zona-carga.drag-over { border-color: var(--verde-med); background: #d4ecd4; }
+    .zona-carga input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .zona-carga .icono-upload { font-size: 2.4rem; margin-bottom: 10px; }
+    .zona-carga p { color: var(--verde); font-weight: 500; margin-bottom: 4px; }
+    .zona-carga small { color: var(--suave); font-size: 0.8rem; }
+
+    .archivo-sel {
+      display: none; align-items: center; gap: 10px; margin-top: 12px;
+      background: var(--oro-claro); border-radius: 8px; padding: 10px 14px;
+      font-size: 0.87rem; color: var(--oro); font-weight: 600;
+      border: 1px solid rgba(201,162,39,0.3);
     }
 
-    .zona-carga input[type="file"] {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      cursor: pointer;
-      width: 100%;
-      height: 100%;
+    /* TEXTAREA + INPUT */
+    textarea, .campo-contexto input {
+      width: 100%; border: 1.5px solid #c5d9c5; border-radius: 10px;
+      padding: 14px 16px; font-family: 'DM Sans', sans-serif;
+      font-size: 0.94rem; color: var(--texto); outline: none; transition: border 0.2s;
     }
 
-    .zona-carga .icono-upload { font-size: 2.5rem; margin-bottom: 12px; }
+    textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
+    textarea:focus, .campo-contexto input:focus { border-color: var(--verde-med); }
 
-    .zona-carga p {
-      color: var(--azul-med);
-      font-weight: 500;
-      margin-bottom: 4px;
-    }
+    .campo-contexto { margin-top: 14px; }
+    .campo-contexto label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--suave); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
 
-    .zona-carga small { color: var(--suave); font-size: 0.82rem; }
-
-    .archivo-seleccionado {
-      display: none;
-      align-items: center;
-      gap: 10px;
-      margin-top: 14px;
-      background: #e8f4ed;
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-size: 0.88rem;
-      color: var(--verde);
-      font-weight: 500;
-    }
-
-    /* ── TEXTAREA ── */
-    textarea {
-      width: 100%;
-      border: 1.5px solid #c5d6e8;
-      border-radius: 10px;
-      padding: 16px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.95rem;
-      color: var(--texto);
-      resize: vertical;
-      min-height: 120px;
-      outline: none;
-      transition: border 0.2s;
-      line-height: 1.6;
-    }
-
-    textarea:focus { border-color: var(--azul-med); }
-
-    /* ── CONTEXTO ── */
-    .campo-contexto {
-      margin-top: 16px;
-    }
-
-    .campo-contexto label {
-      display: block;
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--suave);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 6px;
-    }
-
-    .campo-contexto input {
-      width: 100%;
-      border: 1.5px solid #c5d6e8;
-      border-radius: 10px;
-      padding: 12px 16px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.95rem;
-      color: var(--texto);
-      outline: none;
-      transition: border 0.2s;
-    }
-
-    .campo-contexto input:focus { border-color: var(--azul-med); }
-
-    /* ── BOTÓN ── */
+    /* BOTÓN */
     .btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      width: 100%;
-      padding: 16px;
-      margin-top: 20px;
-      background: var(--azul);
-      color: var(--blanco);
-      border: none;
-      border-radius: 12px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      letter-spacing: 0.3px;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 15px; margin-top: 18px;
+      background: var(--verde); color: var(--blanco); border: none;
+      border-radius: 12px; font-family: 'DM Sans', sans-serif;
+      font-size: 0.97rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
     }
 
-    .btn:hover { background: var(--azul-med); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,58,92,0.25); }
+    .btn:hover { background: var(--verde-med); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(45,106,45,0.3); }
     .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-    /* ── PROGRESO ── */
-    .progreso {
-      display: none;
-      margin-top: 20px;
-    }
+    /* PROGRESO */
+    .progreso { display: none; margin-top: 18px; }
+    .progreso-barra-wrap { background: var(--verde-claro); border-radius: 100px; height: 8px; overflow: hidden; margin-bottom: 10px; }
+    .progreso-barra { height: 100%; background: linear-gradient(90deg, var(--verde), var(--oro)); border-radius: 100px; width: 0%; transition: width 0.4s ease; animation: pulso 1.5s ease infinite; }
+    @keyframes pulso { 0%,100%{opacity:1} 50%{opacity:0.7} }
+    .progreso p { font-size: 0.84rem; color: var(--suave); text-align: center; }
 
-    .progreso-barra-wrap {
-      background: var(--azul-claro);
-      border-radius: 100px;
-      height: 8px;
-      overflow: hidden;
-      margin-bottom: 10px;
-    }
-
-    .progreso-barra {
-      height: 100%;
-      background: linear-gradient(90deg, var(--azul), var(--azul-med));
-      border-radius: 100px;
-      width: 0%;
-      transition: width 0.4s ease;
-      animation: pulso 1.5s ease infinite;
-    }
-
-    @keyframes pulso {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.7; }
-    }
-
-    .progreso p {
-      font-size: 0.85rem;
-      color: var(--suave);
-      text-align: center;
-    }
-
-    /* ── RESULTADOS ── */
+    /* RESULTADOS */
     #resultados { display: none; }
 
-    .res-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .res-header h3 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.4rem;
-      color: var(--azul);
-    }
+    .res-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; flex-wrap: wrap; gap: 12px; }
+    .res-header h3 { font-family: 'DM Serif Display', serif; font-size: 1.35rem; color: var(--verde-oscuro); }
 
     .btn-exportar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 20px;
-      background: var(--verde);
-      color: var(--blanco);
-      border: none;
-      border-radius: 10px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.88rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
+      display: flex; align-items: center; gap: 8px; padding: 10px 18px;
+      background: var(--oro); color: var(--verde-oscuro); border: none; border-radius: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.86rem; font-weight: 700;
+      cursor: pointer; transition: all 0.2s;
     }
 
     .btn-exportar:hover { opacity: 0.88; transform: translateY(-1px); }
 
-    /* ── MÉTRICAS ── */
-    .metricas {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
+    /* MÉTRICAS */
+    .metricas { display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 14px; margin-bottom: 22px; }
 
-    .metrica {
-      background: var(--gris);
-      border-radius: 12px;
-      padding: 20px;
-      text-align: center;
-      border-left: 4px solid var(--azul);
-      transition: transform 0.2s;
-    }
-
+    .metrica { background: var(--gris); border-radius: 12px; padding: 18px; text-align: center; border-left: 4px solid var(--verde); transition: transform 0.2s; }
     .metrica:hover { transform: translateY(-2px); }
-    .metrica.positiva { border-color: var(--verde); }
+    .metrica.positiva { border-color: var(--verde-med); }
     .metrica.negativa { border-color: var(--rojo); }
     .metrica.neutra   { border-color: var(--amarillo); }
     .metrica.alto     { border-color: var(--rojo); }
     .metrica.medio    { border-color: var(--amarillo); }
-    .metrica.bajo     { border-color: var(--verde); }
+    .metrica.bajo     { border-color: var(--verde-med); }
 
-    .metrica .numero {
-      font-family: 'DM Serif Display', serif;
-      font-size: 2.2rem;
-      color: var(--azul);
-      line-height: 1;
-      margin-bottom: 6px;
-    }
-
-    .metrica.positiva .numero { color: var(--verde); }
+    .metrica .numero { font-family: 'DM Serif Display', serif; font-size: 2.1rem; color: var(--verde-oscuro); line-height: 1; margin-bottom: 5px; }
+    .metrica.positiva .numero { color: var(--verde-med); }
     .metrica.negativa .numero { color: var(--rojo); }
     .metrica.neutra   .numero { color: var(--amarillo); }
     .metrica.alto     .numero { color: var(--rojo); }
     .metrica.medio    .numero { color: var(--amarillo); }
-    .metrica.bajo     .numero { color: var(--verde); }
+    .metrica.bajo     .numero { color: var(--verde-med); }
+    .metrica .etiqueta { font-size: 0.76rem; color: var(--suave); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
 
-    .metrica .etiqueta {
-      font-size: 0.78rem;
-      color: var(--suave);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
+    /* TEMAS */
+    .temas-wrap { margin-bottom: 22px; }
+    .temas-wrap h4 { font-size: 0.8rem; font-weight: 600; color: var(--suave); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+    .temas { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tema { background: var(--verde-claro); color: var(--verde-oscuro); border-radius: 20px; padding: 5px 13px; font-size: 0.86rem; font-weight: 500; border: 1px solid #a8c5a8; animation: popIn 0.3s ease both; }
+    @keyframes popIn { from{transform:scale(0.8);opacity:0} to{transform:scale(1);opacity:1} }
 
-    /* ── TEMAS ── */
-    .temas-wrap {
-      margin-bottom: 24px;
-    }
+    /* CONCLUSIÓN */
+    .conclusion-box { background: linear-gradient(135deg, var(--verde-claro), #f0f8f0); border-radius: 12px; padding: 22px; margin-bottom: 14px; border-left: 4px solid var(--verde); }
+    .conclusion-box.oro { background: linear-gradient(135deg, var(--oro-claro), #fffbf0); border-color: var(--oro); }
+    .conclusion-box h4 { font-size: 0.8rem; font-weight: 600; color: var(--suave); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .conclusion-box p { color: var(--texto); font-size: 0.93rem; line-height: 1.6; }
 
-    .temas-wrap h4 {
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--suave);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 12px;
-    }
+    /* TABLA PERSONAS */
+    .tabla-wrap { overflow-x: auto; margin-bottom: 22px; }
+    .tabla { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+    .tabla th { background: var(--verde-oscuro); color: var(--blanco); padding: 10px 14px; text-align: left; font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.4px; }
+    .tabla th:first-child { border-radius: 8px 0 0 0; }
+    .tabla th:last-child  { border-radius: 0 8px 0 0; }
+    .tabla td { padding: 10px 14px; border-bottom: 1px solid #e8f0e8; color: var(--texto); }
+    .tabla tr:hover td { background: var(--verde-claro); }
+    .tabla tr:last-child td { border-bottom: none; }
 
-    .temas {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
+    /* GRUPOS */
+    .grupos-wrap { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 22px; }
+    .grupo-card { border-radius: 12px; padding: 16px; }
+    .grupo-card.positivo { background: #e8f5e8; border: 1px solid #a8c5a8; }
+    .grupo-card.negativo { background: #fdecea; border: 1px solid #f5b7b1; }
+    .grupo-card.mixto    { background: var(--oro-claro); border: 1px solid rgba(201,162,39,0.3); }
+    .grupo-card h4 { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+    .grupo-card.positivo h4 { color: var(--verde); }
+    .grupo-card.negativo h4 { color: var(--rojo); }
+    .grupo-card.mixto    h4 { color: var(--oro); }
+    .grupo-persona { display: inline-block; background: var(--blanco); border-radius: 6px; padding: 4px 10px; margin: 3px; font-size: 0.82rem; font-weight: 500; }
 
-    .tema {
-      background: var(--azul-claro);
-      color: var(--azul);
-      border-radius: 20px;
-      padding: 6px 14px;
-      font-size: 0.88rem;
-      font-weight: 500;
-      border: 1px solid #c5d6e8;
-      animation: popIn 0.3s ease both;
-    }
+    /* BADGES */
+    .badge { padding: 3px 10px; border-radius: 20px; font-size: 0.76rem; font-weight: 600; }
+    .badge.positiva, .badge.mayormente-positivo, .badge.tendencia-positiva { background: #e8f5e8; color: var(--verde); }
+    .badge.negativa, .badge.mayormente-negativo, .badge.tendencia-negativa { background: #fdecea; color: var(--rojo); }
+    .badge.neutra, .badge.mixto { background: var(--oro-claro); color: var(--oro); }
+    .badge.alto   { background: #fdecea; color: var(--rojo); }
+    .badge.medio  { background: var(--oro-claro); color: var(--amarillo); }
+    .badge.bajo   { background: #e8f5e8; color: var(--verde); }
 
-    @keyframes popIn {
-      from { transform: scale(0.8); opacity: 0; }
-      to   { transform: scale(1);   opacity: 1; }
-    }
+    /* ERROR */
+    .error-box { display: none; background: #fdecea; border: 1px solid #f5b7b1; border-radius: 12px; padding: 14px 18px; color: var(--rojo); font-size: 0.88rem; margin-top: 14px; align-items: center; gap: 10px; }
 
-    /* ── CONCLUSIÓN ── */
-    .conclusion-box {
-      background: linear-gradient(135deg, var(--azul-claro), #f0f7ff);
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 16px;
-      border-left: 4px solid var(--azul);
-    }
+    /* DIVIDER */
+    .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--oro), transparent); margin: 20px 0; }
 
-    .conclusion-box h4 {
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--suave);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 8px;
-    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
 
-    .conclusion-box p {
-      color: var(--texto);
-      font-size: 0.95rem;
-      line-height: 1.6;
-    }
-
-    /* ── RESULTADO INDIVIDUAL ── */
-    .resultado-individual {
-      background: var(--gris);
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 12px;
-    }
-
-    .resultado-individual .texto {
-      font-size: 0.92rem;
-      color: var(--texto);
-      margin-bottom: 10px;
-      line-height: 1.5;
-      font-style: italic;
-    }
-
-    .badges {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .badge {
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 0.78rem;
-      font-weight: 600;
-    }
-
-    .badge.positiva { background: #e8f5ee; color: var(--verde); }
-    .badge.negativa { background: #fdecea; color: var(--rojo); }
-    .badge.neutra   { background: #fef9e7; color: var(--amarillo); }
-    .badge.alto     { background: #fdecea; color: var(--rojo); }
-    .badge.medio    { background: #fef9e7; color: var(--amarillo); }
-    .badge.bajo     { background: #e8f5ee; color: var(--verde); }
-
-    /* ── ERROR ── */
-    .error-box {
-      display: none;
-      background: #fdecea;
-      border: 1px solid #f5b7b1;
-      border-radius: 12px;
-      padding: 16px 20px;
-      color: var(--rojo);
-      font-size: 0.9rem;
-      margin-top: 16px;
-      align-items: center;
-      gap: 10px;
-    }
-
-    /* ── ANIMACIONES ── */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ── RESPONSIVE ── */
     @media (max-width: 600px) {
-      header { padding: 0 20px; }
-      main { padding: 24px 16px 40px; }
+      header { padding: 0 16px; }
+      main   { padding: 20px 14px 40px; }
       .hero h2 { font-size: 1.6rem; }
-      .card { padding: 20px; }
-      .tabs { flex-direction: column; }
+      .card  { padding: 18px; }
+      .tabs  { flex-direction: column; }
+      .header-lema { display: none; }
     }
   </style>
 </head>
@@ -545,68 +281,59 @@
 
 <header>
   <div class="header-logo">
-    <div class="icono">🧠</div>
+    <div class="header-escudo">🎓</div>
     <div>
       <h1>Análisis Cualitativo con IA</h1>
-      <p>Plataforma de análisis para cualquier tema o sector</p>
+      <p>Universidad Autónoma del Estado de México</p>
     </div>
   </div>
-  <div class="header-badge">v2.1.0 — Powered by LLaMA 3</div>
+  <div class="header-lema">Patria · Ciencia · Trabajo</div>
 </header>
 
 <main>
 
   <div class="hero">
-    <h2>Analiza respuestas abiertas<br><em>de cualquier tema</em></h2>
-    <p>Sube tu archivo de Google Forms, Microsoft Forms, CSV o Excel. La IA detecta emociones, niveles de riesgo y temas principales sin importar el contexto.</p>
+    <div class="hero-badge">UAEMEX — Plataforma Institucional</div>
+    <h2>Analiza encuestas y respuestas<br><em>con Inteligencia Artificial</em></h2>
+    <p>Sube tu archivo de Google Forms, Microsoft Forms, CSV o Excel. La IA detecta emociones, niveles de riesgo y genera un análisis por persona automáticamente.</p>
   </div>
 
   <!-- TABS -->
   <div class="tabs">
-    <button class="tab activo" onclick="cambiarTab('archivo')">
-      📁 Subir archivo
-    </button>
-    <button class="tab" onclick="cambiarTab('texto')">
-      ✍️ Texto individual
-    </button>
+    <button class="tab activo" onclick="cambiarTab('archivo')">📁 Subir archivo</button>
+    <button class="tab" onclick="cambiarTab('texto')">✍️ Texto individual</button>
   </div>
 
   <!-- TAB ARCHIVO -->
   <div id="tab-archivo">
     <div class="card">
-      <h3>Subir archivo de respuestas</h3>
-      <p class="desc">Acepta archivos de Google Forms, Microsoft Forms, CSV o Excel. La IA detecta automáticamente las columnas con respuestas abiertas sin importar el tema.</p>
+      <h3>Subir archivo de encuesta</h3>
+      <p class="desc">Acepta CSV, Excel (.xlsx) y JSON. Si el archivo tiene nombres o IDs, la IA genera un análisis individual por persona automáticamente.</p>
 
       <div class="zona-carga" id="zona-carga">
         <input type="file" id="input-archivo" accept=".csv,.xlsx,.xls,.json" onchange="archivoSeleccionado(this)"/>
         <div class="icono-upload">📂</div>
         <p>Arrastra tu archivo aquí o haz clic para seleccionar</p>
-        <small>CSV, Excel (.xlsx), JSON — Google Forms y Microsoft Forms</small>
+        <small>CSV · Excel (.xlsx) · JSON — Google Forms · Microsoft Forms</small>
       </div>
 
-      <div class="archivo-seleccionado" id="archivo-sel">
-        ✅ <span id="nombre-archivo"></span>
+      <div class="archivo-sel" id="archivo-sel">
+        🟡 <span id="nombre-archivo"></span>
       </div>
 
       <div class="campo-contexto">
         <label>Contexto del análisis (opcional)</label>
-        <input type="text" id="contexto-archivo" value="" placeholder="Ej: encuesta de satisfacción, evaluación docente, clima laboral, feedback de clientes..."/>
+        <input type="text" id="contexto-archivo" value="" placeholder="Ej: encuesta de bienestar, evaluación docente, clima laboral, satisfacción de clientes..."/>
       </div>
 
-      <button class="btn" id="btn-archivo" onclick="analizarArchivo()">
-        🔍 Analizar respuestas
-      </button>
+      <button class="btn" id="btn-archivo" onclick="analizarArchivo()">🔍 Analizar encuesta</button>
 
       <div class="progreso" id="progreso-archivo">
-        <div class="progreso-barra-wrap">
-          <div class="progreso-barra" id="barra-archivo"></div>
-        </div>
+        <div class="progreso-barra-wrap"><div class="progreso-barra" id="barra-archivo"></div></div>
         <p id="texto-progreso">Analizando respuestas con IA...</p>
       </div>
 
-      <div class="error-box" id="error-archivo">
-        ⚠️ <span id="msg-error-archivo"></span>
-      </div>
+      <div class="error-box" id="error-archivo">⚠️ <span id="msg-error-archivo"></span></div>
     </div>
   </div>
 
@@ -614,29 +341,23 @@
   <div id="tab-texto" style="display:none">
     <div class="card">
       <h3>Analizar respuesta individual</h3>
-      <p class="desc">Escribe o pega cualquier respuesta abierta para obtener el análisis de emoción y nivel de riesgo, sin importar el tema.</p>
+      <p class="desc">Escribe o pega cualquier respuesta abierta para obtener un análisis detallado de emoción, riesgo e interpretación.</p>
 
-      <textarea id="input-texto" placeholder="Escribe aquí la respuesta a analizar...&#10;&#10;Puede ser de cualquier tema: encuesta estudiantil, feedback de cliente, evaluación de empleado, comentario en redes, etc."></textarea>
+      <textarea id="input-texto" placeholder="Escribe aquí la respuesta a analizar...&#10;&#10;Puede ser de cualquier tema: encuesta estudiantil, feedback de cliente, evaluación docente, comentario, etc."></textarea>
 
       <div class="campo-contexto">
-        <label>Contexto del análisis (opcional)</label>
-        <input type="text" id="contexto-texto" value="" placeholder="Ej: evaluación de servicio, clima organizacional, satisfacción de clientes..."/>
+        <label>Contexto (opcional)</label>
+        <input type="text" id="contexto-texto" value="" placeholder="Ej: evaluación docente, satisfacción estudiantil, clima organizacional..."/>
       </div>
 
-      <button class="btn" id="btn-texto" onclick="analizarTexto()">
-        🔍 Analizar respuesta
-      </button>
+      <button class="btn" id="btn-texto" onclick="analizarTexto()">🔍 Analizar respuesta</button>
 
       <div class="progreso" id="progreso-texto">
-        <div class="progreso-barra-wrap">
-          <div class="progreso-barra" id="barra-texto"></div>
-        </div>
+        <div class="progreso-barra-wrap"><div class="progreso-barra" id="barra-texto"></div></div>
         <p>Analizando con IA...</p>
       </div>
 
-      <div class="error-box" id="error-texto">
-        ⚠️ <span id="msg-error-texto"></span>
-      </div>
+      <div class="error-box" id="error-texto">⚠️ <span id="msg-error-texto"></span></div>
     </div>
   </div>
 
@@ -644,11 +365,8 @@
   <div id="resultados" class="card">
     <div class="res-header">
       <h3>📊 Resultados del análisis</h3>
-      <button class="btn-exportar" onclick="exportarJSON()">
-        ⬇️ Exportar JSON
-      </button>
+      <button class="btn-exportar" onclick="exportarJSON()">⬇️ Exportar JSON</button>
     </div>
-
     <div id="contenido-resultados"></div>
   </div>
 
@@ -658,7 +376,6 @@
   const API = 'http://localhost:8000';
   let datosGuardados = null;
 
-  // ── TABS ──────────────────────────────────────
   function cambiarTab(tab) {
     document.querySelectorAll('.tab').forEach((t, i) => {
       t.classList.toggle('activo', (i === 0 && tab === 'archivo') || (i === 1 && tab === 'texto'));
@@ -668,7 +385,6 @@
     document.getElementById('resultados').style.display  = 'none';
   }
 
-  // ── ARCHIVO SELECCIONADO ──────────────────────
   function archivoSeleccionado(input) {
     if (input.files.length > 0) {
       document.getElementById('nombre-archivo').textContent = input.files[0].name;
@@ -676,133 +392,94 @@
     }
   }
 
-  // ── DRAG AND DROP ─────────────────────────────
   const zona = document.getElementById('zona-carga');
   zona.addEventListener('dragover', e => { e.preventDefault(); zona.classList.add('drag-over'); });
   zona.addEventListener('dragleave', () => zona.classList.remove('drag-over'));
   zona.addEventListener('drop', e => {
-    e.preventDefault();
-    zona.classList.remove('drag-over');
-    const archivo = e.dataTransfer.files[0];
-    if (archivo) {
-      document.getElementById('input-archivo').files = e.dataTransfer.files;
-      archivoSeleccionado(document.getElementById('input-archivo'));
-    }
+    e.preventDefault(); zona.classList.remove('drag-over');
+    const f = e.dataTransfer.files[0];
+    if (f) { document.getElementById('input-archivo').files = e.dataTransfer.files; archivoSeleccionado(document.getElementById('input-archivo')); }
   });
 
-  // ── PROGRESO SIMULADO ─────────────────────────
   function iniciarProgreso(idBarra, idProgreso, idTexto) {
     document.getElementById(idProgreso).style.display = 'block';
     const barra = document.getElementById(idBarra);
     let pct = 0;
-    const mensajes = [
-      'Leyendo el archivo...', 'Detectando columnas de respuestas...',
-      'Analizando emociones con IA...', 'Calculando niveles de riesgo...',
-      'Generando conclusiones...', 'Casi listo...'
-    ];
-    let mIdx = 0;
-    const intervalo = setInterval(() => {
-      pct += Math.random() * 8;
-      if (pct > 88) pct = 88;
+    const msgs = ['Leyendo el archivo...','Detectando columnas...','Analizando emociones con IA...','Calculando niveles de riesgo...','Generando conclusiones...','Casi listo...'];
+    let mi = 0;
+    const iv = setInterval(() => {
+      pct += Math.random() * 7; if (pct > 88) pct = 88;
       barra.style.width = pct + '%';
-      if (idTexto && mIdx < mensajes.length - 1 && pct > (mIdx + 1) * 15) {
-        document.getElementById(idTexto).textContent = mensajes[++mIdx];
-      }
+      if (idTexto && mi < msgs.length - 1 && pct > (mi + 1) * 15)
+        document.getElementById(idTexto).textContent = msgs[++mi];
     }, 600);
-    return { intervalo, barra };
+    return { iv, barra };
   }
 
-  function terminarProgreso({ intervalo, barra }, idProgreso) {
-    clearInterval(intervalo);
-    barra.style.width = '100%';
-    setTimeout(() => {
-      document.getElementById(idProgreso).style.display = 'none';
-      barra.style.width = '0%';
-    }, 500);
+  function terminarProgreso({ iv, barra }, idProgreso) {
+    clearInterval(iv); barra.style.width = '100%';
+    setTimeout(() => { document.getElementById(idProgreso).style.display = 'none'; barra.style.width = '0%'; }, 500);
   }
 
-  // ── ANALIZAR ARCHIVO ─────────────────────────
   async function analizarArchivo() {
     const input    = document.getElementById('input-archivo');
     const contexto = document.getElementById('contexto-archivo').value.trim() || 'análisis cualitativo';
     const btnEl    = document.getElementById('btn-archivo');
-    const errEl    = document.getElementById('error-archivo');
+    document.getElementById('error-archivo').style.display = 'none';
 
-    errEl.style.display = 'none';
-
-    if (!input.files.length) {
-      mostrarError('error-archivo', 'msg-error-archivo', 'Selecciona un archivo primero.');
-      return;
-    }
+    if (!input.files.length) { mostrarError('error-archivo','msg-error-archivo','Selecciona un archivo primero.'); return; }
 
     btnEl.disabled = true;
-    const prog = iniciarProgreso('barra-archivo', 'progreso-archivo', 'texto-progreso');
+    const prog = iniciarProgreso('barra-archivo','progreso-archivo','texto-progreso');
 
     try {
       const form = new FormData();
       form.append('archivo', input.files[0]);
-
-      const res  = await fetch(`${API}/analizar-archivo?contexto=${encodeURIComponent(contexto)}`, {
-        method: 'POST', body: form
-      });
-
+      const res  = await fetch(`${API}/analizar-archivo?contexto=${encodeURIComponent(contexto)}`, { method:'POST', body:form });
       const data = await res.json();
       terminarProgreso(prog, 'progreso-archivo');
-
       if (!res.ok) throw new Error(data.detail || 'Error del servidor');
-
       datosGuardados = data;
-      mostrarResultadosLote(data);
-
-    } catch (e) {
+      mostrarResultados(data);
+    } catch(e) {
       terminarProgreso(prog, 'progreso-archivo');
-      mostrarError('error-archivo', 'msg-error-archivo', e.message);
-    } finally {
-      btnEl.disabled = false;
-    }
+      mostrarError('error-archivo','msg-error-archivo', e.message);
+    } finally { btnEl.disabled = false; }
   }
 
-  // ── ANALIZAR TEXTO ───────────────────────────
   async function analizarTexto() {
     const texto    = document.getElementById('input-texto').value.trim();
     const contexto = document.getElementById('contexto-texto').value.trim() || 'análisis cualitativo';
     const btnEl    = document.getElementById('btn-texto');
-    const errEl    = document.getElementById('error-texto');
+    document.getElementById('error-texto').style.display = 'none';
 
-    errEl.style.display = 'none';
-
-    if (!texto) {
-      mostrarError('error-texto', 'msg-error-texto', 'Escribe una respuesta para analizar.');
-      return;
-    }
+    if (!texto) { mostrarError('error-texto','msg-error-texto','Escribe una respuesta para analizar.'); return; }
 
     btnEl.disabled = true;
-    const prog = iniciarProgreso('barra-texto', 'progreso-texto', null);
+    const prog = iniciarProgreso('barra-texto','progreso-texto', null);
 
     try {
-      const res  = await fetch(`${API}/analizar`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ texto, contexto })
-      });
-
+      const res  = await fetch(`${API}/analizar`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({texto, contexto}) });
       const data = await res.json();
       terminarProgreso(prog, 'progreso-texto');
-
       if (!res.ok) throw new Error(data.detail || 'Error del servidor');
-
       datosGuardados = data;
       mostrarResultadoIndividual(data, texto);
-
-    } catch (e) {
+    } catch(e) {
       terminarProgreso(prog, 'progreso-texto');
-      mostrarError('error-texto', 'msg-error-texto', e.message);
-    } finally {
-      btnEl.disabled = false;
+      mostrarError('error-texto','msg-error-texto', e.message);
+    } finally { btnEl.disabled = false; }
+  }
+
+  function mostrarResultados(data) {
+    // Si tiene análisis por persona
+    if (data.analisis_por_persona && data.analisis_por_persona.length > 0) {
+      mostrarResultadosPorPersona(data);
+    } else {
+      mostrarResultadosLote(data);
     }
   }
 
-  // ── MOSTRAR RESULTADOS LOTE ──────────────────
   function mostrarResultadosLote(data) {
     const el    = document.getElementById('contenido-resultados');
     const total = data.total_respuestas_procesadas || 0;
@@ -811,116 +488,148 @@
     const temas = data.temas_principales_detectados || [];
 
     el.innerHTML = `
-      <p style="font-size:0.82rem;color:var(--suave);margin-bottom:20px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">
+      <p style="font-size:0.8rem;color:var(--suave);margin-bottom:18px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">
         ${total} respuestas analizadas ${data.archivo ? '— ' + data.archivo : ''}
       </p>
 
-      <h4 style="font-size:0.82rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;">Emociones detectadas</h4>
-      <div class="metricas" style="margin-bottom:24px">
-        <div class="metrica positiva">
-          <div class="numero">${em.positivas ?? 0}</div>
-          <div class="etiqueta">😊 Positivas</div>
-        </div>
-        <div class="metrica negativa">
-          <div class="numero">${em.negativas ?? 0}</div>
-          <div class="etiqueta">😟 Negativas</div>
-        </div>
-        <div class="metrica neutra">
-          <div class="numero">${em.neutras ?? 0}</div>
-          <div class="etiqueta">😐 Neutras</div>
-        </div>
+      <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:11px;">Emociones detectadas</h4>
+      <div class="metricas" style="margin-bottom:22px">
+        <div class="metrica positiva"><div class="numero">${em.positivas??0}</div><div class="etiqueta">😊 Positivas</div></div>
+        <div class="metrica negativa"><div class="numero">${em.negativas??0}</div><div class="etiqueta">😟 Negativas</div></div>
+        <div class="metrica neutra"><div class="numero">${em.neutras??0}</div><div class="etiqueta">😐 Neutras</div></div>
       </div>
 
-      <h4 style="font-size:0.82rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;">Niveles de riesgo</h4>
-      <div class="metricas" style="margin-bottom:24px">
-        <div class="metrica alto">
-          <div class="numero">${ri.alto ?? 0}</div>
-          <div class="etiqueta">🔴 Riesgo alto</div>
-        </div>
-        <div class="metrica medio">
-          <div class="numero">${ri.medio ?? 0}</div>
-          <div class="etiqueta">🟡 Riesgo medio</div>
-        </div>
-        <div class="metrica bajo">
-          <div class="numero">${ri.bajo ?? 0}</div>
-          <div class="etiqueta">🟢 Riesgo bajo</div>
-        </div>
+      <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:11px;">Niveles de riesgo</h4>
+      <div class="metricas" style="margin-bottom:22px">
+        <div class="metrica alto"><div class="numero">${ri.alto??0}</div><div class="etiqueta">🔴 Riesgo alto</div></div>
+        <div class="metrica medio"><div class="numero">${ri.medio??0}</div><div class="etiqueta">🟡 Riesgo medio</div></div>
+        <div class="metrica bajo"><div class="numero">${ri.bajo??0}</div><div class="etiqueta">🟢 Riesgo bajo</div></div>
       </div>
 
-      ${temas.length ? `
-      <div class="temas-wrap">
-        <h4>Temas principales detectados</h4>
-        <div class="temas">
-          ${temas.map((t, i) => `<span class="tema" style="animation-delay:${i * 0.05}s">${t}</span>`).join('')}
-        </div>
-      </div>` : ''}
+      ${temas.length ? `<div class="temas-wrap"><h4>Temas principales</h4><div class="temas">${temas.map((t,i)=>`<span class="tema" style="animation-delay:${i*0.05}s">${t}</span>`).join('')}</div></div>` : ''}
 
-      <div class="conclusion-box">
-        <h4>📋 Conclusión general</h4>
-        <p>${data.conclusion_general}</p>
-      </div>
-
-      <div class="conclusion-box" style="border-color:var(--verde);background:linear-gradient(135deg,#e8f5ee,#f0faf4)">
-        <h4>💡 Recomendación</h4>
-        <p>${data.recomendacion_general}</p>
-      </div>
+      <div class="divider"></div>
+      <div class="conclusion-box"><h4>📋 Conclusión general</h4><p>${data.conclusion_general}</p></div>
+      <div class="conclusion-box oro"><h4>💡 Recomendación</h4><p>${data.recomendacion_general}</p></div>
     `;
 
     document.getElementById('resultados').style.display = 'block';
-    document.getElementById('resultados').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById('resultados').scrollIntoView({behavior:'smooth',block:'start'});
   }
 
-  // ── MOSTRAR RESULTADO INDIVIDUAL ─────────────
-  function mostrarResultadoIndividual(data, texto) {
-    const el = document.getElementById('contenido-resultados');
+  function mostrarResultadosPorPersona(data) {
+    const el      = document.getElementById('contenido-resultados');
+    const em      = data.emociones || {};
+    const ri      = data.niveles_riesgo || {};
+    const temas   = data.temas_principales_detectados || [];
+    const personas = data.analisis_por_persona || [];
+    const grupos  = data.grupos || {};
 
     el.innerHTML = `
-      <div class="resultado-individual">
-        <div class="texto">"${texto}"</div>
-        <div class="badges">
-          <span class="badge ${data.emocion_detectada}">${data.emocion_detectada === 'positiva' ? '😊' : data.emocion_detectada === 'negativa' ? '😟' : '😐'} ${data.emocion_detectada}</span>
-          <span class="badge ${data.nivel_riesgo}">⚠️ Riesgo ${data.nivel_riesgo}</span>
-          <span class="badge" style="background:#f0f0f0;color:var(--suave)">🎯 Confianza: ${Math.round(data.confianza_modelo * 100)}%</span>
+      <p style="font-size:0.8rem;color:var(--suave);margin-bottom:18px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">
+        ${data.total_personas} personas · ${data.total_respuestas_procesadas} respuestas — ${data.archivo}
+      </p>
+      ${data.columna_identidad_detectada ? `<p style="font-size:0.82rem;color:var(--verde);margin-bottom:16px;">✅ Columna de identidad detectada: <strong>${data.columna_identidad_detectada}</strong></p>` : ''}
+
+      <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:11px;">Emociones generales</h4>
+      <div class="metricas" style="margin-bottom:22px">
+        <div class="metrica positiva"><div class="numero">${em.positivas??0}</div><div class="etiqueta">😊 Positivas</div></div>
+        <div class="metrica negativa"><div class="numero">${em.negativas??0}</div><div class="etiqueta">😟 Negativas</div></div>
+        <div class="metrica neutra"><div class="numero">${em.neutras??0}</div><div class="etiqueta">😐 Neutras</div></div>
+        <div class="metrica alto"><div class="numero">${ri.alto??0}</div><div class="etiqueta">🔴 Riesgo alto</div></div>
+        <div class="metrica medio"><div class="numero">${ri.medio??0}</div><div class="etiqueta">🟡 Riesgo medio</div></div>
+        <div class="metrica bajo"><div class="numero">${ri.bajo??0}</div><div class="etiqueta">🟢 Riesgo bajo</div></div>
+      </div>
+
+      <!-- GRUPOS -->
+      <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:11px;">Clasificación por perfil</h4>
+      <div class="grupos-wrap" style="margin-bottom:22px">
+        <div class="grupo-card positivo">
+          <h4>✅ Perfil positivo (${(grupos.perfil_positivo||[]).length})</h4>
+          ${(grupos.perfil_positivo||[]).map(p=>`<span class="grupo-persona">${p}</span>`).join('') || '<span style="font-size:0.82rem;color:var(--suave)">Ninguno</span>'}
+        </div>
+        <div class="grupo-card negativo">
+          <h4>⚠️ Perfil negativo (${(grupos.perfil_negativo||[]).length})</h4>
+          ${(grupos.perfil_negativo||[]).map(p=>`<span class="grupo-persona">${p}</span>`).join('') || '<span style="font-size:0.82rem;color:var(--suave)">Ninguno</span>'}
+        </div>
+        <div class="grupo-card mixto">
+          <h4>🔄 Perfil mixto (${(grupos.perfil_mixto||[]).length})</h4>
+          ${(grupos.perfil_mixto||[]).map(p=>`<span class="grupo-persona">${p}</span>`).join('') || '<span style="font-size:0.82rem;color:var(--suave)">Ninguno</span>'}
         </div>
       </div>
 
-      <div class="conclusion-box" style="margin-top:16px">
-        <h4>🧠 Interpretación</h4>
-        <p>${data.interpretacion}</p>
+      <!-- TABLA POR PERSONA -->
+      <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:11px;">Detalle por persona</h4>
+      <div class="tabla-wrap" style="margin-bottom:22px">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>Persona</th>
+              <th>Positivas</th>
+              <th>Negativas</th>
+              <th>Neutras</th>
+              <th>Perfil</th>
+              <th>Riesgo</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${personas.map(p => `
+              <tr>
+                <td><strong>${p.persona}</strong></td>
+                <td style="color:var(--verde-med);font-weight:600">${p.respuestas_positivas}</td>
+                <td style="color:var(--rojo);font-weight:600">${p.respuestas_negativas}</td>
+                <td style="color:var(--amarillo);font-weight:600">${p.respuestas_neutras}</td>
+                <td><span class="badge ${p.perfil_emocional.replace(/ /g,'-')}">${p.perfil_emocional}</span></td>
+                <td><span class="badge ${p.nivel_riesgo_general}">${p.nivel_riesgo_general}</span></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
       </div>
 
-      ${data.palabras_clave?.length ? `
-      <div class="temas-wrap" style="margin-top:16px">
-        <h4>Palabras clave</h4>
-        <div class="temas">
-          ${data.palabras_clave.map((t, i) => `<span class="tema" style="animation-delay:${i * 0.05}s">${t}</span>`).join('')}
-        </div>
-      </div>` : ''}
+      ${temas.length ? `<div class="temas-wrap"><h4>Temas principales detectados</h4><div class="temas">${temas.map((t,i)=>`<span class="tema" style="animation-delay:${i*0.05}s">${t}</span>`).join('')}</div></div>` : ''}
+
+      <div class="divider"></div>
+      <div class="conclusion-box"><h4>📋 Conclusión general</h4><p>${data.conclusion_general}</p></div>
+      <div class="conclusion-box oro"><h4>💡 Recomendación</h4><p>${data.recomendacion_general}</p></div>
     `;
 
     document.getElementById('resultados').style.display = 'block';
-    document.getElementById('resultados').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById('resultados').scrollIntoView({behavior:'smooth',block:'start'});
   }
 
-  // ── ERROR ─────────────────────────────────────
+  function mostrarResultadoIndividual(data, texto) {
+    const el = document.getElementById('contenido-resultados');
+    el.innerHTML = `
+      <div style="background:var(--gris);border-radius:12px;padding:18px;margin-bottom:16px">
+        <div style="font-size:0.9rem;color:var(--texto);margin-bottom:10px;line-height:1.5;font-style:italic">"${texto}"</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <span class="badge ${data.emocion_detectada}">${data.emocion_detectada==='positiva'?'😊':data.emocion_detectada==='negativa'?'😟':'😐'} ${data.emocion_detectada}</span>
+          <span class="badge ${data.nivel_riesgo}">⚠️ Riesgo ${data.nivel_riesgo}</span>
+          <span class="badge" style="background:#f0f0f0;color:var(--suave)">🎯 Confianza: ${Math.round(data.confianza_modelo*100)}%</span>
+        </div>
+      </div>
+      <div class="conclusion-box"><h4>🧠 Interpretación</h4><p>${data.interpretacion}</p></div>
+      ${data.palabras_clave?.length ? `<div class="temas-wrap" style="margin-top:14px"><h4>Palabras clave</h4><div class="temas">${data.palabras_clave.map((t,i)=>`<span class="tema" style="animation-delay:${i*0.05}s">${t}</span>`).join('')}</div></div>` : ''}
+    `;
+    document.getElementById('resultados').style.display = 'block';
+    document.getElementById('resultados').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
   function mostrarError(idBox, idMsg, msg) {
     const box = document.getElementById(idBox);
     document.getElementById(idMsg).textContent = msg;
     box.style.display = 'flex';
   }
 
-  // ── EXPORTAR ──────────────────────────────────
   function exportarJSON() {
     if (!datosGuardados) return;
-    const blob = new Blob([JSON.stringify(datosGuardados, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(datosGuardados, null, 2)], {type:'application/json'});
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement('a');
-    a.href     = url;
-    a.download = 'analisis_cualitativo.json';
-    a.click();
+    a.href = url; a.download = 'analisis_uaemex.json'; a.click();
     URL.revokeObjectURL(url);
   }
 </script>
-
 </body>
 </html>
