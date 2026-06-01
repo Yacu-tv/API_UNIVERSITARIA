@@ -53,25 +53,20 @@
     .header-logo h1 { font-family: 'DM Serif Display', serif; font-size: 1.15rem; font-weight: 400; }
     .header-logo p  { font-size: 0.7rem; opacity: 0.7; letter-spacing: 0.8px; text-transform: uppercase; }
 
-    .header-lema {
+    .header-version {
       background: rgba(201,162,39,0.2);
       border: 1px solid rgba(201,162,39,0.4);
       border-radius: 20px;
       padding: 6px 16px;
       font-size: 0.75rem;
       color: var(--oro-med);
-      font-style: italic;
-      letter-spacing: 0.3px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
     }
 
-    /* MAIN */
     main { max-width: 980px; margin: 0 auto; padding: 36px 24px 60px; }
 
-    /* HERO */
-    .hero {
-      text-align: center; margin-bottom: 36px;
-      animation: fadeUp 0.6s ease both;
-    }
+    .hero { text-align: center; margin-bottom: 36px; animation: fadeUp 0.6s ease both; }
 
     .hero-badge {
       display: inline-block;
@@ -87,17 +82,10 @@
       text-transform: uppercase;
     }
 
-    .hero h2 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 2.1rem; color: var(--verde-oscuro);
-      margin-bottom: 10px; line-height: 1.2;
-    }
-
+    .hero h2 { font-family: 'DM Serif Display', serif; font-size: 2.1rem; color: var(--verde-oscuro); margin-bottom: 10px; line-height: 1.2; }
     .hero h2 em { color: var(--oro); font-style: normal; }
-
     .hero p { color: var(--suave); font-size: 0.97rem; max-width: 540px; margin: 0 auto; line-height: 1.6; }
 
-    /* TABS */
     .tabs {
       display: flex; gap: 8px; margin-bottom: 28px;
       background: var(--blanco); padding: 6px;
@@ -116,7 +104,6 @@
     .tab.activo { background: var(--verde); color: var(--blanco); box-shadow: 0 2px 10px rgba(45,106,45,0.3); }
     .tab:hover:not(.activo) { background: var(--verde-claro); color: var(--verde); }
 
-    /* CARD */
     .card {
       background: var(--blanco); border-radius: var(--radio);
       box-shadow: var(--sombra); padding: 32px; margin-bottom: 24px;
@@ -127,7 +114,6 @@
     .card h3 { font-family: 'DM Serif Display', serif; font-size: 1.2rem; color: var(--verde-oscuro); margin-bottom: 6px; }
     .card .desc { color: var(--suave); font-size: 0.87rem; margin-bottom: 22px; line-height: 1.5; }
 
-    /* ZONA CARGA */
     .zona-carga {
       border: 2px dashed #a8c5a8; border-radius: 12px; padding: 44px 24px;
       text-align: center; cursor: pointer; transition: all 0.2s;
@@ -147,7 +133,6 @@
       border: 1px solid rgba(201,162,39,0.3);
     }
 
-    /* TEXTAREA + INPUT */
     textarea, .campo-contexto input {
       width: 100%; border: 1.5px solid #c5d9c5; border-radius: 10px;
       padding: 14px 16px; font-family: 'DM Sans', sans-serif;
@@ -160,7 +145,6 @@
     .campo-contexto { margin-top: 14px; }
     .campo-contexto label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--suave); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
 
-    /* BOTÓN */
     .btn {
       display: flex; align-items: center; justify-content: center; gap: 10px;
       width: 100%; padding: 15px; margin-top: 18px;
@@ -172,14 +156,12 @@
     .btn:hover { background: var(--verde-med); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(45,106,45,0.3); }
     .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-    /* PROGRESO */
     .progreso { display: none; margin-top: 18px; }
     .progreso-barra-wrap { background: var(--verde-claro); border-radius: 100px; height: 8px; overflow: hidden; margin-bottom: 10px; }
     .progreso-barra { height: 100%; background: linear-gradient(90deg, var(--verde), var(--oro)); border-radius: 100px; width: 0%; transition: width 0.4s ease; animation: pulso 1.5s ease infinite; }
     @keyframes pulso { 0%,100%{opacity:1} 50%{opacity:0.7} }
     .progreso p { font-size: 0.84rem; color: var(--suave); text-align: center; }
 
-    /* RESULTADOS */
     #resultados { display: none; }
 
     .res-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; flex-wrap: wrap; gap: 12px; }
@@ -194,7 +176,6 @@
 
     .btn-exportar:hover { opacity: 0.88; transform: translateY(-1px); }
 
-    /* MÉTRICAS */
     .metricas { display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 14px; margin-bottom: 22px; }
 
     .metrica { background: var(--gris); border-radius: 12px; padding: 18px; text-align: center; border-left: 4px solid var(--verde); transition: transform 0.2s; }
@@ -215,20 +196,29 @@
     .metrica.bajo     .numero { color: var(--verde-med); }
     .metrica .etiqueta { font-size: 0.76rem; color: var(--suave); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
 
-    /* TEMAS */
     .temas-wrap { margin-bottom: 22px; }
     .temas-wrap h4 { font-size: 0.8rem; font-weight: 600; color: var(--suave); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
     .temas { display: flex; flex-wrap: wrap; gap: 8px; }
     .tema { background: var(--verde-claro); color: var(--verde-oscuro); border-radius: 20px; padding: 5px 13px; font-size: 0.86rem; font-weight: 500; border: 1px solid #a8c5a8; animation: popIn 0.3s ease both; }
     @keyframes popIn { from{transform:scale(0.8);opacity:0} to{transform:scale(1);opacity:1} }
 
-    /* CONCLUSIÓN */
     .conclusion-box { background: linear-gradient(135deg, var(--verde-claro), #f0f8f0); border-radius: 12px; padding: 22px; margin-bottom: 14px; border-left: 4px solid var(--verde); }
     .conclusion-box.oro { background: linear-gradient(135deg, var(--oro-claro), #fffbf0); border-color: var(--oro); }
     .conclusion-box h4 { font-size: 0.8rem; font-weight: 600; color: var(--suave); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
     .conclusion-box p { color: var(--texto); font-size: 0.93rem; line-height: 1.6; }
 
-    /* TABLA PERSONAS */
+    /* INFO DETECCIÓN */
+    .info-deteccion {
+      display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px;
+    }
+
+    .info-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--verde-claro); border: 1px solid #a8c5a8;
+      border-radius: 8px; padding: 6px 12px;
+      font-size: 0.8rem; color: var(--verde-oscuro); font-weight: 500;
+    }
+
     .tabla-wrap { overflow-x: auto; margin-bottom: 22px; }
     .tabla { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
     .tabla th { background: var(--verde-oscuro); color: var(--blanco); padding: 10px 14px; text-align: left; font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.4px; }
@@ -238,7 +228,6 @@
     .tabla tr:hover td { background: var(--verde-claro); }
     .tabla tr:last-child td { border-bottom: none; }
 
-    /* GRUPOS */
     .grupos-wrap { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 22px; }
     .grupo-card { border-radius: 12px; padding: 16px; }
     .grupo-card.positivo { background: #e8f5e8; border: 1px solid #a8c5a8; }
@@ -250,7 +239,6 @@
     .grupo-card.mixto    h4 { color: var(--oro); }
     .grupo-persona { display: inline-block; background: var(--blanco); border-radius: 6px; padding: 4px 10px; margin: 3px; font-size: 0.82rem; font-weight: 500; }
 
-    /* BADGES */
     .badge { padding: 3px 10px; border-radius: 20px; font-size: 0.76rem; font-weight: 600; }
     .badge.positiva, .badge.mayormente-positivo, .badge.tendencia-positiva { background: #e8f5e8; color: var(--verde); }
     .badge.negativa, .badge.mayormente-negativo, .badge.tendencia-negativa { background: #fdecea; color: var(--rojo); }
@@ -259,10 +247,8 @@
     .badge.medio  { background: var(--oro-claro); color: var(--amarillo); }
     .badge.bajo   { background: #e8f5e8; color: var(--verde); }
 
-    /* ERROR */
     .error-box { display: none; background: #fdecea; border: 1px solid #f5b7b1; border-radius: 12px; padding: 14px 18px; color: var(--rojo); font-size: 0.88rem; margin-top: 14px; align-items: center; gap: 10px; }
 
-    /* DIVIDER */
     .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--oro), transparent); margin: 20px 0; }
 
     @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
@@ -273,7 +259,6 @@
       .hero h2 { font-size: 1.6rem; }
       .card  { padding: 18px; }
       .tabs  { flex-direction: column; }
-      .header-lema { display: none; }
     }
   </style>
 </head>
@@ -287,7 +272,7 @@
       <p>Universidad Autónoma del Estado de México</p>
     </div>
   </div>
-  <div class="header-lema">Patria · Ciencia · Trabajo</div>
+  <div class="header-version">v3.1.0 — LLaMA 3 · Groq</div>
 </header>
 
 <main>
@@ -295,20 +280,18 @@
   <div class="hero">
     <div class="hero-badge">UAEMEX — Plataforma Institucional</div>
     <h2>Analiza encuestas y respuestas<br><em>con Inteligencia Artificial</em></h2>
-    <p>Sube tu archivo de Google Forms, Microsoft Forms, CSV o Excel. La IA detecta emociones, niveles de riesgo y genera un análisis por persona automáticamente.</p>
+    <p>Sube tu archivo de Google Forms, Microsoft Forms, CSV o Excel. La IA detecta nombres, IDs, emociones y niveles de riesgo automáticamente.</p>
   </div>
 
-  <!-- TABS -->
   <div class="tabs">
     <button class="tab activo" onclick="cambiarTab('archivo')">📁 Subir archivo</button>
     <button class="tab" onclick="cambiarTab('texto')">✍️ Texto individual</button>
   </div>
 
-  <!-- TAB ARCHIVO -->
   <div id="tab-archivo">
     <div class="card">
       <h3>Subir archivo de encuesta</h3>
-      <p class="desc">Acepta CSV, Excel (.xlsx) y JSON. Si el archivo tiene nombres o IDs, la IA genera un análisis individual por persona automáticamente.</p>
+      <p class="desc">Acepta CSV, Excel (.xlsx) y JSON. Detecta automáticamente nombres, IDs, matrículas y columnas de respuestas abiertas.</p>
 
       <div class="zona-carga" id="zona-carga">
         <input type="file" id="input-archivo" accept=".csv,.xlsx,.xls,.json" onchange="archivoSeleccionado(this)"/>
@@ -337,13 +320,12 @@
     </div>
   </div>
 
-  <!-- TAB TEXTO -->
   <div id="tab-texto" style="display:none">
     <div class="card">
       <h3>Analizar respuesta individual</h3>
       <p class="desc">Escribe o pega cualquier respuesta abierta para obtener un análisis detallado de emoción, riesgo e interpretación.</p>
 
-      <textarea id="input-texto" placeholder="Escribe aquí la respuesta a analizar...&#10;&#10;Puede ser de cualquier tema: encuesta estudiantil, feedback de cliente, evaluación docente, comentario, etc."></textarea>
+      <textarea id="input-texto" placeholder="Escribe aquí la respuesta a analizar...&#10;&#10;Puede ser de cualquier tema: encuesta estudiantil, feedback de cliente, evaluación docente, etc."></textarea>
 
       <div class="campo-contexto">
         <label>Contexto (opcional)</label>
@@ -361,7 +343,6 @@
     </div>
   </div>
 
-  <!-- RESULTADOS -->
   <div id="resultados" class="card">
     <div class="res-header">
       <h3>📊 Resultados del análisis</h3>
@@ -405,7 +386,7 @@
     document.getElementById(idProgreso).style.display = 'block';
     const barra = document.getElementById(idBarra);
     let pct = 0;
-    const msgs = ['Leyendo el archivo...','Detectando columnas...','Analizando emociones con IA...','Calculando niveles de riesgo...','Generando conclusiones...','Casi listo...'];
+    const msgs = ['Leyendo el archivo...','Detectando columnas...','Identificando personas...','Analizando emociones con IA...','Calculando niveles de riesgo...','Generando conclusiones...'];
     let mi = 0;
     const iv = setInterval(() => {
       pct += Math.random() * 7; if (pct > 88) pct = 88;
@@ -472,7 +453,6 @@
   }
 
   function mostrarResultados(data) {
-    // Si tiene análisis por persona
     if (data.analisis_por_persona && data.analisis_por_persona.length > 0) {
       mostrarResultadosPorPersona(data);
     } else {
@@ -491,23 +471,19 @@
       <p style="font-size:0.8rem;color:var(--suave);margin-bottom:18px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">
         ${total} respuestas analizadas ${data.archivo ? '— ' + data.archivo : ''}
       </p>
-
       <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:11px;">Emociones detectadas</h4>
       <div class="metricas" style="margin-bottom:22px">
         <div class="metrica positiva"><div class="numero">${em.positivas??0}</div><div class="etiqueta">😊 Positivas</div></div>
         <div class="metrica negativa"><div class="numero">${em.negativas??0}</div><div class="etiqueta">😟 Negativas</div></div>
         <div class="metrica neutra"><div class="numero">${em.neutras??0}</div><div class="etiqueta">😐 Neutras</div></div>
       </div>
-
       <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:11px;">Niveles de riesgo</h4>
       <div class="metricas" style="margin-bottom:22px">
         <div class="metrica alto"><div class="numero">${ri.alto??0}</div><div class="etiqueta">🔴 Riesgo alto</div></div>
         <div class="metrica medio"><div class="numero">${ri.medio??0}</div><div class="etiqueta">🟡 Riesgo medio</div></div>
         <div class="metrica bajo"><div class="numero">${ri.bajo??0}</div><div class="etiqueta">🟢 Riesgo bajo</div></div>
       </div>
-
       ${temas.length ? `<div class="temas-wrap"><h4>Temas principales</h4><div class="temas">${temas.map((t,i)=>`<span class="tema" style="animation-delay:${i*0.05}s">${t}</span>`).join('')}</div></div>` : ''}
-
       <div class="divider"></div>
       <div class="conclusion-box"><h4>📋 Conclusión general</h4><p>${data.conclusion_general}</p></div>
       <div class="conclusion-box oro"><h4>💡 Recomendación</h4><p>${data.recomendacion_general}</p></div>
@@ -518,18 +494,24 @@
   }
 
   function mostrarResultadosPorPersona(data) {
-    const el      = document.getElementById('contenido-resultados');
-    const em      = data.emociones || {};
-    const ri      = data.niveles_riesgo || {};
-    const temas   = data.temas_principales_detectados || [];
+    const el       = document.getElementById('contenido-resultados');
+    const em       = data.emociones || {};
+    const ri       = data.niveles_riesgo || {};
+    const temas    = data.temas_principales_detectados || [];
     const personas = data.analisis_por_persona || [];
-    const grupos  = data.grupos || {};
+    const grupos   = data.grupos || {};
+
+    // Construir tags de detección
+    let tagsDeteccion = '';
+    if (data.columna_nombre_detectada)
+      tagsDeteccion += `<div class="info-tag">👤 Nombre: <strong>${data.columna_nombre_detectada}</strong></div>`;
+    if (data.columna_id_detectada)
+      tagsDeteccion += `<div class="info-tag">🪪 ID: <strong>${data.columna_id_detectada}</strong></div>`;
+    tagsDeteccion += `<div class="info-tag">📄 ${data.archivo}</div>`;
+    tagsDeteccion += `<div class="info-tag">👥 ${data.total_personas} personas · ${data.total_respuestas_procesadas} respuestas</div>`;
 
     el.innerHTML = `
-      <p style="font-size:0.8rem;color:var(--suave);margin-bottom:18px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">
-        ${data.total_personas} personas · ${data.total_respuestas_procesadas} respuestas — ${data.archivo}
-      </p>
-      ${data.columna_identidad_detectada ? `<p style="font-size:0.82rem;color:var(--verde);margin-bottom:16px;">✅ Columna de identidad detectada: <strong>${data.columna_identidad_detectada}</strong></p>` : ''}
+      <div class="info-deteccion">${tagsDeteccion}</div>
 
       <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:11px;">Emociones generales</h4>
       <div class="metricas" style="margin-bottom:22px">
@@ -541,7 +523,6 @@
         <div class="metrica bajo"><div class="numero">${ri.bajo??0}</div><div class="etiqueta">🟢 Riesgo bajo</div></div>
       </div>
 
-      <!-- GRUPOS -->
       <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:11px;">Clasificación por perfil</h4>
       <div class="grupos-wrap" style="margin-bottom:22px">
         <div class="grupo-card positivo">
@@ -558,16 +539,15 @@
         </div>
       </div>
 
-      <!-- TABLA POR PERSONA -->
       <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:11px;">Detalle por persona</h4>
       <div class="tabla-wrap" style="margin-bottom:22px">
         <table class="tabla">
           <thead>
             <tr>
               <th>Persona</th>
-              <th>Positivas</th>
-              <th>Negativas</th>
-              <th>Neutras</th>
+              <th>😊 Positivas</th>
+              <th>😟 Negativas</th>
+              <th>😐 Neutras</th>
               <th>Perfil</th>
               <th>Riesgo</th>
             </tr>
@@ -576,9 +556,9 @@
             ${personas.map(p => `
               <tr>
                 <td><strong>${p.persona}</strong></td>
-                <td style="color:var(--verde-med);font-weight:600">${p.respuestas_positivas}</td>
-                <td style="color:var(--rojo);font-weight:600">${p.respuestas_negativas}</td>
-                <td style="color:var(--amarillo);font-weight:600">${p.respuestas_neutras}</td>
+                <td style="color:var(--verde-med);font-weight:600;text-align:center">${p.respuestas_positivas}</td>
+                <td style="color:var(--rojo);font-weight:600;text-align:center">${p.respuestas_negativas}</td>
+                <td style="color:var(--amarillo);font-weight:600;text-align:center">${p.respuestas_neutras}</td>
                 <td><span class="badge ${p.perfil_emocional.replace(/ /g,'-')}">${p.perfil_emocional}</span></td>
                 <td><span class="badge ${p.nivel_riesgo_general}">${p.nivel_riesgo_general}</span></td>
               </tr>
