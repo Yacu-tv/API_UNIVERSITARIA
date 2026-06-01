@@ -23,7 +23,7 @@ nlp = spacy.load("es_core_news_sm")
 app = FastAPI(
     title="API de Análisis Cualitativo con IA",
     description="Plataforma de análisis cualitativo para cualquier tipo de encuesta o tema",
-    version="3.0.0"
+    version="3.1.0"
 )
 
 app.add_middleware(
@@ -210,24 +210,97 @@ Responde ÚNICAMENTE con este JSON:
     }
 
 
-def detectar_columna_identidad(df: pd.DataFrame) -> Optional[str]:
+def detectar_columnas_identidad(df: pd.DataFrame) -> dict:
+    """
+    Detecta columnas de nombre e ID/matrícula por separado.
+    Retorna: { "nombre": col_nombre, "id": col_id }
+    Ambos pueden ser None si no se detectan.
+    """
+    palabras_nombre = [
+        "nombre", "name", "alumno", "empleado", "participante",
+        "encuestado", "sujeto", "trabajador", "estudiante", "usuario",
+        "apellido"
+    ]
+    palabras_id = [
+        "id", "matricula", "matrícula", "clave", "codigo", "código",
+        "folio", "numero", "número", "num", "expediente", "cuenta"
+    ]
+
+    col_nombre = None
+    col_id     = None
+
+    # Buscar por nombre de columna — prioridad máxima
     for col in df.columns:
-        muestra = df[col].dropna().astype(str)
-        if len(muestra) == 0:
-            continue
-        longitud_promedio = muestra.apply(len).mean()
-        unicidad = muestra.nunique() / len(muestra)
         nombre_col = str(col).lower()
-        if longitud_promedio < 30 and unicidad > 0.7:
-            if any(k in nombre_col for k in ["nombre", "name", "id", "matricula", "matrícula", "alumno", "empleado", "participante"]):
-                return col
-    for col in df.columns:
-        muestra = df[col].dropna().astype(str)
-        if len(muestra) == 0:
-            continue
-        if muestra.apply(len).mean() < 30 and muestra.nunique() / len(muestra) > 0.7:
-            return col
-    return None
+        if col_nombre is None and any(k in nombre_col for k in palabras_nombre):
+            col_nombre = col
+        if col_id is None and any(k in nombre_col for k in palabras_id):
+            col_id = col
+
+    # Si no encontró nombre por keyword, buscar columna con texto alfabético único
+    if col_nombre is None:
+        for col in df.columns:
+            if col == col_id:
+                continue
+            muestra = df[col].dropna().astype(str)
+            if len(muestra) == 0:
+                continue
+            longitud_promedio = muestra.apply(len).mean()
+            unicidad          = muestra.nunique() / len(muestra)
+            es_numerica       = pd.to_numeric(muestra, errors='coerce').notna().mean() > 0.8
+            if longitud_promedio < 35 and unicidad > 0.7 and not es_numerica:
+                col_nombre = col
+                break
+
+    # Si no encontró ID por keyword, buscar columna numérica corta y única
+    if col_id is None:
+        for col in df.columns:
+            if col == col_nombre:
+                continue
+            muestra = df[col].dropna().astype(str)
+            if len(muestra) == 0:
+                continue
+            es_numerica = pd.to_numeric(muestra, errors='coerce').notna().mean() > 0.8
+            unicidad    = muestra.nunique() / len(muestra)
+            if es_numerica and unicidad > 0.7:
+                col_id = col
+                break
+
+    return {"nombre": col_nombre, "id": col_id}
+
+
+def construir_identificador(fila, cols_identidad: dict) -> str:
+    """
+    Construye el identificador de la persona combinando nombre e ID.
+    Ejemplos:
+      - "Ana García (ID: 1)"
+      - "Ana García (Matrícula: 2021001)"
+      - "Carlos Mendoza"
+      - "ID: 42"
+    """
+    col_nombre = cols_identidad.get("nombre")
+    col_id     = cols_identidad.get("id")
+
+    nombre = str(fila[col_nombre]).strip() if col_nombre and pd.notna(fila.get(col_nombre)) else None
+    id_val = str(fila[col_id]).strip()     if col_id     and pd.notna(fila.get(col_id))     else None
+
+    # Limpiar valores vacíos o "nan"
+    if nombre and nombre.lower() in ["nan", "", "none"]:
+        nombre = None
+    if id_val and id_val.lower() in ["nan", "", "none"]:
+        id_val = None
+
+    if nombre and id_val:
+        # Obtener el nombre de la columna ID para mostrar como etiqueta
+        etiqueta_id = str(col_id).strip()
+        return f"{nombre} ({etiqueta_id}: {id_val})"
+    elif nombre:
+        return nombre
+    elif id_val:
+        etiqueta_id = str(col_id).strip() if col_id else "ID"
+        return f"{etiqueta_id}: {id_val}"
+    else:
+        return "Persona sin identificar"
 
 
 def leer_csv_robusto(contenido: bytes) -> pd.DataFrame:
@@ -256,9 +329,12 @@ def leer_dataframe(archivo: UploadFile) -> pd.DataFrame:
         raise HTTPException(status_code=400, detail="Formato no soportado. Usa CSV, Excel o JSON.")
 
 
-def detectar_columnas_respuestas(df: pd.DataFrame) -> List[str]:
+def detectar_columnas_respuestas(df: pd.DataFrame, excluir: List[str] = []) -> List[str]:
+    """Detecta columnas con respuestas abiertas (texto largo), excluyendo las de identidad."""
     columnas = []
     for col in df.columns:
+        if col in excluir:
+            continue
         muestra = df[col].dropna().astype(str)
         if len(muestra) == 0 or not pd.api.types.is_string_dtype(df[col]):
             continue
@@ -267,11 +343,15 @@ def detectar_columnas_respuestas(df: pd.DataFrame) -> List[str]:
     return columnas
 
 
+# --------------------------------------------------
+# ENDPOINTS
+# --------------------------------------------------
+
 @app.get("/")
 def inicio():
     return {
         "nombre":  "API de Análisis Cualitativo con IA",
-        "version": "3.0.0",
+        "version": "3.1.0",
         "estado":  "funcionando",
         "endpoints": {
             "analizar_individual":    "/analizar",
@@ -328,8 +408,9 @@ async def analizar_archivo(
 ):
     """
     Acepta CSV, Excel o JSON.
-    - Si detecta columna de identidad (nombre/ID/matrícula): análisis por persona + grupos
-    - Si no: análisis general del grupo
+    - Detecta nombre E ID/matrícula por separado y los combina: "Ana García (ID: 1)"
+    - Si hay identidad: análisis por persona + grupos
+    - Si no hay: análisis general del grupo
     """
     try:
         df = leer_dataframe(archivo)
@@ -338,28 +419,35 @@ async def analizar_archivo(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al leer el archivo: {str(e)}")
 
-    columnas_respuestas = detectar_columnas_respuestas(df)
+    # Detectar columnas de identidad
+    cols_identidad = detectar_columnas_identidad(df)
+    col_nombre     = cols_identidad.get("nombre")
+    col_id         = cols_identidad.get("id")
+
+    # Excluir columnas de identidad de las respuestas
+    excluir = [c for c in [col_nombre, col_id] if c is not None]
+    columnas_respuestas = detectar_columnas_respuestas(df, excluir=excluir)
+
     if not columnas_respuestas:
         raise HTTPException(status_code=400, detail="No se detectaron columnas con respuestas abiertas.")
 
-    col_identidad      = detectar_columna_identidad(df)
-    todas_las_palabras = []
+    todas_las_palabras  = []
     resultados_globales = []
 
-    if col_identidad:
+    hay_identidad = col_nombre is not None or col_id is not None
+
+    if hay_identidad:
         personas_resultado = []
 
         for _, fila in df.iterrows():
-            identificador = str(fila[col_identidad]) if pd.notna(fila[col_identidad]) else None
-            if not identificador or identificador.strip() == "":
-                continue
+            identificador = construir_identificador(fila, cols_identidad)
 
             pos = neg = neu = 0
-            riesgo_max = "bajo"
+            riesgo_max       = "bajo"
             interpretaciones = []
 
             for col in columnas_respuestas:
-                texto = str(fila[col]) if pd.notna(fila[col]) else ""
+                texto = str(fila[col]) if pd.notna(fila.get(col)) else ""
                 if len(texto.strip()) < 5:
                     continue
                 todas_las_palabras.extend(extraer_palabras_clave(texto))
@@ -400,7 +488,8 @@ async def analizar_archivo(
 
         return {
             "archivo":                      archivo.filename,
-            "columna_identidad_detectada":  str(col_identidad),
+            "columna_nombre_detectada":     str(col_nombre) if col_nombre else None,
+            "columna_id_detectada":         str(col_id)     if col_id     else None,
             "total_personas":               len(personas_resultado),
             "total_respuestas_procesadas":  len(resultados_globales),
             "temas_principales_detectados": temas,
@@ -413,6 +502,7 @@ async def analizar_archivo(
             **resumen
         }
 
+    # Sin identidad — análisis general
     else:
         respuestas = []
         for col in columnas_respuestas:
@@ -424,7 +514,8 @@ async def analizar_archivo(
         resumen = generar_resumen_lote(resultados_globales, contexto, temas)
         return {
             "archivo":                      archivo.filename,
-            "columna_identidad_detectada":  None,
+            "columna_nombre_detectada":     None,
+            "columna_id_detectada":         None,
             "total_respuestas_procesadas":  len(resultados_globales),
             "temas_principales_detectados": temas,
             **resumen
