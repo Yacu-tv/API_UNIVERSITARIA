@@ -7,152 +7,72 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --verde:        #2d6a2d;
-      --verde-med:    #3d8b3d;
-      --verde-claro:  #e8f5e8;
-      --verde-oscuro: #1a4a1a;
-      --oro:          #c9a227;
-      --oro-claro:    #fdf6e3;
-      --oro-med:      #e6b800;
-      --rojo:         #c0392b;
-      --amarillo:     #d4a017;
-      --gris:         #f5f5f0;
-      --texto:        #1c2b1c;
-      --suave:        #5a7a5a;
-      --blanco:       #ffffff;
-      --sombra:       0 4px 24px rgba(45,106,45,0.12);
-      --radio:        16px;
+      --verde: #2d6a2d; --verde-med: #3d8b3d; --verde-claro: #e8f5e8;
+      --verde-oscuro: #1a4a1a; --oro: #c9a227; --oro-claro: #fdf6e3;
+      --oro-med: #e6b800; --rojo: #c0392b; --rojo-claro: #fdecea;
+      --amarillo: #d4a017; --amarillo-claro: #fef9e7;
+      --morado: #6c3483; --morado-claro: #f4ecf7;
+      --naranja: #d35400; --naranja-claro: #fef0e7;
+      --gris: #f5f5f0; --texto: #1c2b1c; --suave: #5a7a5a;
+      --blanco: #ffffff; --sombra: 0 4px 24px rgba(45,106,45,0.12); --radio: 16px;
     }
-
     body { font-family: 'DM Sans', sans-serif; background: var(--gris); color: var(--texto); min-height: 100vh; }
 
-    /* HEADER */
     header {
       background: linear-gradient(135deg, var(--verde-oscuro), var(--verde));
-      color: var(--blanco);
-      padding: 0 40px;
+      color: var(--blanco); padding: 0 40px;
       display: flex; align-items: center; justify-content: space-between;
       height: 72px; position: sticky; top: 0; z-index: 100;
-      box-shadow: 0 3px 16px rgba(0,0,0,0.22);
-      border-bottom: 3px solid var(--oro);
+      box-shadow: 0 3px 16px rgba(0,0,0,0.22); border-bottom: 3px solid var(--oro);
     }
-
     .header-logo { display: flex; align-items: center; gap: 14px; }
-
-    .header-escudo {
-      width: 44px; height: 44px;
-      background: var(--oro);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    }
-
+    .header-escudo { width: 44px; height: 44px; background: var(--oro); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
     .header-logo h1 { font-family: 'DM Serif Display', serif; font-size: 1.15rem; font-weight: 400; }
     .header-logo p  { font-size: 0.7rem; opacity: 0.7; letter-spacing: 0.8px; text-transform: uppercase; }
-
-    .header-version {
-      background: rgba(201,162,39,0.2);
-      border: 1px solid rgba(201,162,39,0.4);
-      border-radius: 20px;
-      padding: 6px 16px;
-      font-size: 0.75rem;
-      color: var(--oro-med);
-      font-weight: 600;
-      letter-spacing: 0.5px;
-    }
+    .header-version { background: rgba(201,162,39,0.2); border: 1px solid rgba(201,162,39,0.4); border-radius: 20px; padding: 6px 16px; font-size: 0.75rem; color: var(--oro-med); font-weight: 600; letter-spacing: 0.5px; }
 
     main { max-width: 980px; margin: 0 auto; padding: 36px 24px 60px; }
 
     .hero { text-align: center; margin-bottom: 36px; animation: fadeUp 0.6s ease both; }
-
-    .hero-badge {
-      display: inline-block;
-      background: var(--oro-claro);
-      border: 1px solid var(--oro);
-      border-radius: 20px;
-      padding: 5px 16px;
-      font-size: 0.78rem;
-      color: var(--oro);
-      font-weight: 600;
-      margin-bottom: 14px;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
-
+    .hero-badge { display: inline-block; background: var(--oro-claro); border: 1px solid var(--oro); border-radius: 20px; padding: 5px 16px; font-size: 0.78rem; color: var(--oro); font-weight: 600; margin-bottom: 14px; letter-spacing: 0.5px; text-transform: uppercase; }
     .hero h2 { font-family: 'DM Serif Display', serif; font-size: 2.1rem; color: var(--verde-oscuro); margin-bottom: 10px; line-height: 1.2; }
     .hero h2 em { color: var(--oro); font-style: normal; }
     .hero p { color: var(--suave); font-size: 0.97rem; max-width: 540px; margin: 0 auto; line-height: 1.6; }
 
-    .tabs {
-      display: flex; gap: 8px; margin-bottom: 28px;
-      background: var(--blanco); padding: 6px;
-      border-radius: 14px; box-shadow: var(--sombra);
-      animation: fadeUp 0.6s ease 0.1s both;
-    }
-
-    .tab {
-      flex: 1; padding: 12px; border: none; background: transparent;
-      border-radius: 10px; cursor: pointer;
-      font-family: 'DM Sans', sans-serif; font-size: 0.87rem; font-weight: 500;
-      color: var(--suave); transition: all 0.2s;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-    }
-
+    .tabs { display: flex; gap: 8px; margin-bottom: 28px; background: var(--blanco); padding: 6px; border-radius: 14px; box-shadow: var(--sombra); animation: fadeUp 0.6s ease 0.1s both; }
+    .tab { flex: 1; padding: 12px; border: none; background: transparent; border-radius: 10px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.87rem; font-weight: 500; color: var(--suave); transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .tab.activo { background: var(--verde); color: var(--blanco); box-shadow: 0 2px 10px rgba(45,106,45,0.3); }
     .tab:hover:not(.activo) { background: var(--verde-claro); color: var(--verde); }
 
-    .card {
-      background: var(--blanco); border-radius: var(--radio);
-      box-shadow: var(--sombra); padding: 32px; margin-bottom: 24px;
-      animation: fadeUp 0.6s ease 0.2s both;
-      border-top: 3px solid var(--oro);
-    }
-
+    .card { background: var(--blanco); border-radius: var(--radio); box-shadow: var(--sombra); padding: 32px; margin-bottom: 24px; animation: fadeUp 0.6s ease 0.2s both; border-top: 3px solid var(--oro); }
     .card h3 { font-family: 'DM Serif Display', serif; font-size: 1.2rem; color: var(--verde-oscuro); margin-bottom: 6px; }
     .card .desc { color: var(--suave); font-size: 0.87rem; margin-bottom: 22px; line-height: 1.5; }
 
-    .zona-carga {
-      border: 2px dashed #a8c5a8; border-radius: 12px; padding: 44px 24px;
-      text-align: center; cursor: pointer; transition: all 0.2s;
-      background: var(--verde-claro); position: relative;
-    }
+    /* FILTROS */
+    .filtros-wrap { background: var(--verde-claro); border-radius: 12px; padding: 18px; margin-bottom: 20px; border: 1px solid #a8c5a8; }
+    .filtros-wrap h4 { font-size: 0.8rem; font-weight: 600; color: var(--verde-oscuro); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+    .filtros-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+    .filtro-item { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .filtro-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--verde); cursor: pointer; }
+    .filtro-item label { font-size: 0.87rem; color: var(--verde-oscuro); cursor: pointer; font-weight: 500; }
 
+    .zona-carga { border: 2px dashed #a8c5a8; border-radius: 12px; padding: 44px 24px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--verde-claro); position: relative; }
     .zona-carga:hover, .zona-carga.drag-over { border-color: var(--verde-med); background: #d4ecd4; }
     .zona-carga input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
     .zona-carga .icono-upload { font-size: 2.4rem; margin-bottom: 10px; }
     .zona-carga p { color: var(--verde); font-weight: 500; margin-bottom: 4px; }
     .zona-carga small { color: var(--suave); font-size: 0.8rem; }
 
-    .archivo-sel {
-      display: none; align-items: center; gap: 10px; margin-top: 12px;
-      background: var(--oro-claro); border-radius: 8px; padding: 10px 14px;
-      font-size: 0.87rem; color: var(--oro); font-weight: 600;
-      border: 1px solid rgba(201,162,39,0.3);
-    }
+    .archivo-sel { display: none; align-items: center; gap: 10px; margin-top: 12px; background: var(--oro-claro); border-radius: 8px; padding: 10px 14px; font-size: 0.87rem; color: var(--oro); font-weight: 600; border: 1px solid rgba(201,162,39,0.3); }
 
-    textarea, .campo-contexto input {
-      width: 100%; border: 1.5px solid #c5d9c5; border-radius: 10px;
-      padding: 14px 16px; font-family: 'DM Sans', sans-serif;
-      font-size: 0.94rem; color: var(--texto); outline: none; transition: border 0.2s;
-    }
-
+    textarea, .campo-contexto input { width: 100%; border: 1.5px solid #c5d9c5; border-radius: 10px; padding: 14px 16px; font-family: 'DM Sans', sans-serif; font-size: 0.94rem; color: var(--texto); outline: none; transition: border 0.2s; }
     textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
     textarea:focus, .campo-contexto input:focus { border-color: var(--verde-med); }
-
     .campo-contexto { margin-top: 14px; }
     .campo-contexto label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--suave); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
 
-    .btn {
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      width: 100%; padding: 15px; margin-top: 18px;
-      background: var(--verde); color: var(--blanco); border: none;
-      border-radius: 12px; font-family: 'DM Sans', sans-serif;
-      font-size: 0.97rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
-    }
-
+    .btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 15px; margin-top: 18px; background: var(--verde); color: var(--blanco); border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 0.97rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
     .btn:hover { background: var(--verde-med); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(45,106,45,0.3); }
     .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
@@ -163,22 +83,13 @@
     .progreso p { font-size: 0.84rem; color: var(--suave); text-align: center; }
 
     #resultados { display: none; }
-
     .res-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; flex-wrap: wrap; gap: 12px; }
     .res-header h3 { font-family: 'DM Serif Display', serif; font-size: 1.35rem; color: var(--verde-oscuro); }
-
-    .btn-exportar {
-      display: flex; align-items: center; gap: 8px; padding: 10px 18px;
-      background: var(--oro); color: var(--verde-oscuro); border: none; border-radius: 10px;
-      font-family: 'DM Sans', sans-serif; font-size: 0.86rem; font-weight: 700;
-      cursor: pointer; transition: all 0.2s;
-    }
-
+    .btn-exportar { display: flex; align-items: center; gap: 8px; padding: 10px 18px; background: var(--oro); color: var(--verde-oscuro); border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
     .btn-exportar:hover { opacity: 0.88; transform: translateY(-1px); }
 
-    .metricas { display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 14px; margin-bottom: 22px; }
-
-    .metrica { background: var(--gris); border-radius: 12px; padding: 18px; text-align: center; border-left: 4px solid var(--verde); transition: transform 0.2s; }
+    .metricas { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 12px; margin-bottom: 22px; }
+    .metrica { background: var(--gris); border-radius: 12px; padding: 16px; text-align: center; border-left: 4px solid var(--verde); transition: transform 0.2s; }
     .metrica:hover { transform: translateY(-2px); }
     .metrica.positiva { border-color: var(--verde-med); }
     .metrica.negativa { border-color: var(--rojo); }
@@ -186,15 +97,36 @@
     .metrica.alto     { border-color: var(--rojo); }
     .metrica.medio    { border-color: var(--amarillo); }
     .metrica.bajo     { border-color: var(--verde-med); }
-
-    .metrica .numero { font-family: 'DM Serif Display', serif; font-size: 2.1rem; color: var(--verde-oscuro); line-height: 1; margin-bottom: 5px; }
+    .metrica.filtrada { border-color: var(--morado); }
+    .metrica .numero { font-family: 'DM Serif Display', serif; font-size: 2rem; color: var(--verde-oscuro); line-height: 1; margin-bottom: 5px; }
     .metrica.positiva .numero { color: var(--verde-med); }
     .metrica.negativa .numero { color: var(--rojo); }
     .metrica.neutra   .numero { color: var(--amarillo); }
     .metrica.alto     .numero { color: var(--rojo); }
     .metrica.medio    .numero { color: var(--amarillo); }
     .metrica.bajo     .numero { color: var(--verde-med); }
-    .metrica .etiqueta { font-size: 0.76rem; color: var(--suave); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .metrica.filtrada .numero { color: var(--morado); }
+    .metrica .etiqueta { font-size: 0.74rem; color: var(--suave); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* SECCIÓN FILTRADAS */
+    .seccion-filtrada { border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .seccion-filtrada.irrelevante { background: var(--morado-claro); border: 1px solid #d2b4de; }
+    .seccion-filtrada.ofensiva    { background: var(--rojo-claro);    border: 1px solid #f5b7b1; }
+    .seccion-filtrada.alerta      { background: var(--naranja-claro); border: 1px solid #f5cba7; }
+    .seccion-filtrada.conductual  { background: var(--amarillo-claro);border: 1px solid #f9e79f; }
+    .seccion-filtrada h4 { font-size: 0.85rem; font-weight: 700; margin-bottom: 12px; }
+    .seccion-filtrada.irrelevante h4 { color: var(--morado); }
+    .seccion-filtrada.ofensiva    h4 { color: var(--rojo); }
+    .seccion-filtrada.alerta      h4 { color: var(--naranja); }
+    .seccion-filtrada.conductual  h4 { color: var(--amarillo); }
+    .respuesta-item { background: var(--blanco); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; font-size: 0.85rem; }
+    .respuesta-item .texto-resp { color: var(--texto); font-style: italic; margin-bottom: 4px; }
+    .respuesta-item .meta-resp  { font-size: 0.78rem; color: var(--suave); }
+
+    /* PATRONES CONDUCTUALES */
+    .patrones-wrap { background: var(--amarillo-claro); border: 1px solid #f9e79f; border-radius: 12px; padding: 18px; margin-bottom: 22px; }
+    .patrones-wrap h4 { font-size: 0.8rem; font-weight: 600; color: var(--amarillo); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+    .patron-item { display: inline-flex; align-items: center; gap: 8px; background: var(--blanco); border-radius: 8px; padding: 6px 12px; margin: 4px; font-size: 0.84rem; font-weight: 500; color: var(--texto); }
 
     .temas-wrap { margin-bottom: 22px; }
     .temas-wrap h4 { font-size: 0.8rem; font-weight: 600; color: var(--suave); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
@@ -207,17 +139,8 @@
     .conclusion-box h4 { font-size: 0.8rem; font-weight: 600; color: var(--suave); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
     .conclusion-box p { color: var(--texto); font-size: 0.93rem; line-height: 1.6; }
 
-    /* INFO DETECCIÓN */
-    .info-deteccion {
-      display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px;
-    }
-
-    .info-tag {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: var(--verde-claro); border: 1px solid #a8c5a8;
-      border-radius: 8px; padding: 6px 12px;
-      font-size: 0.8rem; color: var(--verde-oscuro); font-weight: 500;
-    }
+    .info-deteccion { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+    .info-tag { display: inline-flex; align-items: center; gap: 6px; background: var(--verde-claro); border: 1px solid #a8c5a8; border-radius: 8px; padding: 6px 12px; font-size: 0.8rem; color: var(--verde-oscuro); font-weight: 500; }
 
     .tabla-wrap { overflow-x: auto; margin-bottom: 22px; }
     .tabla { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
@@ -248,17 +171,14 @@
     .badge.bajo   { background: #e8f5e8; color: var(--verde); }
 
     .error-box { display: none; background: #fdecea; border: 1px solid #f5b7b1; border-radius: 12px; padding: 14px 18px; color: var(--rojo); font-size: 0.88rem; margin-top: 14px; align-items: center; gap: 10px; }
-
-    .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--oro), transparent); margin: 20px 0; }
+    .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--oro), transparent); margin: 24px 0; }
+    .seccion-titulo { font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: var(--verde-oscuro); margin: 24px 0 14px; padding-bottom: 8px; border-bottom: 2px solid var(--oro-claro); }
 
     @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-
     @media (max-width: 600px) {
-      header { padding: 0 16px; }
-      main   { padding: 20px 14px 40px; }
-      .hero h2 { font-size: 1.6rem; }
-      .card  { padding: 18px; }
-      .tabs  { flex-direction: column; }
+      header { padding: 0 16px; } main { padding: 20px 14px 40px; }
+      .hero h2 { font-size: 1.6rem; } .card { padding: 18px; }
+      .tabs { flex-direction: column; }
     }
   </style>
 </head>
@@ -272,15 +192,14 @@
       <p>Universidad Autónoma del Estado de México</p>
     </div>
   </div>
-  <div class="header-version">v3.1.0 — LLaMA 3 · Groq</div>
+  <div class="header-version">v4.0.0 — LLaMA 3 · Groq</div>
 </header>
 
 <main>
-
   <div class="hero">
     <div class="hero-badge">UAEMEX — Plataforma Institucional</div>
     <h2>Analiza encuestas y respuestas<br><em>con Inteligencia Artificial</em></h2>
-    <p>Sube tu archivo de Google Forms, Microsoft Forms, CSV o Excel. La IA detecta nombres, IDs, emociones y niveles de riesgo automáticamente.</p>
+    <p>Filtrado inteligente de respuestas irrelevantes, ofensivas y alertas. Análisis conductual y emocional por persona.</p>
   </div>
 
   <div class="tabs">
@@ -288,10 +207,34 @@
     <button class="tab" onclick="cambiarTab('texto')">✍️ Texto individual</button>
   </div>
 
+  <!-- TAB ARCHIVO -->
   <div id="tab-archivo">
     <div class="card">
       <h3>Subir archivo de encuesta</h3>
-      <p class="desc">Acepta CSV, Excel (.xlsx) y JSON. Detecta automáticamente nombres, IDs, matrículas y columnas de respuestas abiertas.</p>
+      <p class="desc">Acepta CSV, Excel y JSON. Detecta nombres, IDs y filtra automáticamente respuestas irrelevantes, ofensivas y alertas.</p>
+
+      <!-- FILTROS -->
+      <div class="filtros-wrap">
+        <h4>⚙️ Criterios de filtrado</h4>
+        <div class="filtros-grid">
+          <label class="filtro-item">
+            <input type="checkbox" id="f-irrelevantes" checked/>
+            <label for="f-irrelevantes">🚫 Detectar irrelevantes</label>
+          </label>
+          <label class="filtro-item">
+            <input type="checkbox" id="f-ofensivas" checked/>
+            <label for="f-ofensivas">⚠️ Detectar ofensivas</label>
+          </label>
+          <label class="filtro-item">
+            <input type="checkbox" id="f-alertas" checked/>
+            <label for="f-alertas">🔴 Detectar alertas</label>
+          </label>
+          <label class="filtro-item">
+            <input type="checkbox" id="f-conductual" checked/>
+            <label for="f-conductual">🎭 Análisis conductual</label>
+          </label>
+        </div>
+      </div>
 
       <div class="zona-carga" id="zona-carga">
         <input type="file" id="input-archivo" accept=".csv,.xlsx,.xls,.json" onchange="archivoSeleccionado(this)"/>
@@ -300,49 +243,43 @@
         <small>CSV · Excel (.xlsx) · JSON — Google Forms · Microsoft Forms</small>
       </div>
 
-      <div class="archivo-sel" id="archivo-sel">
-        🟡 <span id="nombre-archivo"></span>
-      </div>
+      <div class="archivo-sel" id="archivo-sel">🟡 <span id="nombre-archivo"></span></div>
 
       <div class="campo-contexto">
         <label>Contexto del análisis (opcional)</label>
-        <input type="text" id="contexto-archivo" value="" placeholder="Ej: encuesta de bienestar, evaluación docente, clima laboral, satisfacción de clientes..."/>
+        <input type="text" id="contexto-archivo" value="" placeholder="Ej: encuesta de bienestar estudiantil, evaluación docente, clima laboral..."/>
       </div>
 
       <button class="btn" id="btn-archivo" onclick="analizarArchivo()">🔍 Analizar encuesta</button>
 
       <div class="progreso" id="progreso-archivo">
         <div class="progreso-barra-wrap"><div class="progreso-barra" id="barra-archivo"></div></div>
-        <p id="texto-progreso">Analizando respuestas con IA...</p>
+        <p id="texto-progreso">Clasificando y filtrando respuestas...</p>
       </div>
-
       <div class="error-box" id="error-archivo">⚠️ <span id="msg-error-archivo"></span></div>
     </div>
   </div>
 
+  <!-- TAB TEXTO -->
   <div id="tab-texto" style="display:none">
     <div class="card">
       <h3>Analizar respuesta individual</h3>
-      <p class="desc">Escribe o pega cualquier respuesta abierta para obtener un análisis detallado de emoción, riesgo e interpretación.</p>
-
-      <textarea id="input-texto" placeholder="Escribe aquí la respuesta a analizar...&#10;&#10;Puede ser de cualquier tema: encuesta estudiantil, feedback de cliente, evaluación docente, etc."></textarea>
-
+      <p class="desc">Clasifica y analiza una respuesta abierta de cualquier tema.</p>
+      <textarea id="input-texto" placeholder="Escribe aquí la respuesta a analizar..."></textarea>
       <div class="campo-contexto">
         <label>Contexto (opcional)</label>
-        <input type="text" id="contexto-texto" value="" placeholder="Ej: evaluación docente, satisfacción estudiantil, clima organizacional..."/>
+        <input type="text" id="contexto-texto" value="" placeholder="Ej: evaluación docente, satisfacción estudiantil..."/>
       </div>
-
       <button class="btn" id="btn-texto" onclick="analizarTexto()">🔍 Analizar respuesta</button>
-
       <div class="progreso" id="progreso-texto">
         <div class="progreso-barra-wrap"><div class="progreso-barra" id="barra-texto"></div></div>
         <p>Analizando con IA...</p>
       </div>
-
       <div class="error-box" id="error-texto">⚠️ <span id="msg-error-texto"></span></div>
     </div>
   </div>
 
+  <!-- RESULTADOS -->
   <div id="resultados" class="card">
     <div class="res-header">
       <h3>📊 Resultados del análisis</h3>
@@ -350,7 +287,6 @@
     </div>
     <div id="contenido-resultados"></div>
   </div>
-
 </main>
 
 <script>
@@ -359,10 +295,10 @@
 
   function cambiarTab(tab) {
     document.querySelectorAll('.tab').forEach((t, i) => {
-      t.classList.toggle('activo', (i === 0 && tab === 'archivo') || (i === 1 && tab === 'texto'));
+      t.classList.toggle('activo', (i===0&&tab==='archivo')||(i===1&&tab==='texto'));
     });
-    document.getElementById('tab-archivo').style.display = tab === 'archivo' ? 'block' : 'none';
-    document.getElementById('tab-texto').style.display   = tab === 'texto'   ? 'block' : 'none';
+    document.getElementById('tab-archivo').style.display = tab==='archivo'?'block':'none';
+    document.getElementById('tab-texto').style.display   = tab==='texto'?'block':'none';
     document.getElementById('resultados').style.display  = 'none';
   }
 
@@ -386,14 +322,14 @@
     document.getElementById(idProgreso).style.display = 'block';
     const barra = document.getElementById(idBarra);
     let pct = 0;
-    const msgs = ['Leyendo el archivo...','Detectando columnas...','Identificando personas...','Analizando emociones con IA...','Calculando niveles de riesgo...','Generando conclusiones...'];
+    const msgs = ['Leyendo el archivo...','Detectando columnas...','Clasificando respuestas...','Filtrando irrelevantes y alertas...','Analizando emociones con IA...','Detectando patrones conductuales...','Generando conclusiones...'];
     let mi = 0;
     const iv = setInterval(() => {
-      pct += Math.random() * 7; if (pct > 88) pct = 88;
+      pct += Math.random() * 6; if (pct > 88) pct = 88;
       barra.style.width = pct + '%';
-      if (idTexto && mi < msgs.length - 1 && pct > (mi + 1) * 15)
+      if (idTexto && mi < msgs.length-1 && pct > (mi+1)*12)
         document.getElementById(idTexto).textContent = msgs[++mi];
-    }, 600);
+    }, 700);
     return { iv, barra };
   }
 
@@ -410,13 +346,19 @@
 
     if (!input.files.length) { mostrarError('error-archivo','msg-error-archivo','Selecciona un archivo primero.'); return; }
 
+    const fi = document.getElementById('f-irrelevantes').checked;
+    const fo = document.getElementById('f-ofensivas').checked;
+    const fa = document.getElementById('f-alertas').checked;
+    const fc = document.getElementById('f-conductual').checked;
+
     btnEl.disabled = true;
     const prog = iniciarProgreso('barra-archivo','progreso-archivo','texto-progreso');
 
     try {
       const form = new FormData();
       form.append('archivo', input.files[0]);
-      const res  = await fetch(`${API}/analizar-archivo?contexto=${encodeURIComponent(contexto)}`, { method:'POST', body:form });
+      const url = `${API}/analizar-archivo?contexto=${encodeURIComponent(contexto)}&detectar_irrelevantes=${fi}&detectar_ofensivas=${fo}&detectar_alertas=${fa}&analisis_conductual=${fc}`;
+      const res  = await fetch(url, { method:'POST', body:form });
       const data = await res.json();
       terminarProgreso(prog, 'progreso-archivo');
       if (!res.ok) throw new Error(data.detail || 'Error del servidor');
@@ -433,12 +375,9 @@
     const contexto = document.getElementById('contexto-texto').value.trim() || 'análisis cualitativo';
     const btnEl    = document.getElementById('btn-texto');
     document.getElementById('error-texto').style.display = 'none';
-
     if (!texto) { mostrarError('error-texto','msg-error-texto','Escribe una respuesta para analizar.'); return; }
-
     btnEl.disabled = true;
-    const prog = iniciarProgreso('barra-texto','progreso-texto', null);
-
+    const prog = iniciarProgreso('barra-texto','progreso-texto',null);
     try {
       const res  = await fetch(`${API}/analizar`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({texto, contexto}) });
       const data = await res.json();
@@ -453,145 +392,234 @@
   }
 
   function mostrarResultados(data) {
-    if (data.analisis_por_persona && data.analisis_por_persona.length > 0) {
+    if (data.resultados_por_hoja) {
+      mostrarMultiplesHojas(data);
+    } else if (data.analisis_por_persona && data.analisis_por_persona.length > 0) {
       mostrarResultadosPorPersona(data);
     } else {
       mostrarResultadosLote(data);
     }
   }
 
+  function htmlMetricasEmociones(em, ri, totalValidas, totalFiltradas) {
+    return `
+      <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:11px;">Resumen de respuestas</h4>
+      <div class="metricas" style="margin-bottom:22px">
+        <div class="metrica positiva"><div class="numero">${em.positivas??0}</div><div class="etiqueta">😊 Positivas</div></div>
+        <div class="metrica negativa"><div class="numero">${em.negativas??0}</div><div class="etiqueta">😟 Negativas</div></div>
+        <div class="metrica neutra"><div class="numero">${em.neutras??0}</div><div class="etiqueta">😐 Neutras</div></div>
+        <div class="metrica alto"><div class="numero">${ri.alto??0}</div><div class="etiqueta">🔴 Riesgo alto</div></div>
+        <div class="metrica medio"><div class="numero">${ri.medio??0}</div><div class="etiqueta">🟡 Riesgo medio</div></div>
+        <div class="metrica bajo"><div class="numero">${ri.bajo??0}</div><div class="etiqueta">🟢 Riesgo bajo</div></div>
+        ${totalValidas !== undefined ? `<div class="metrica"><div class="numero">${totalValidas}</div><div class="etiqueta">✅ Válidas</div></div>` : ''}
+        ${totalFiltradas ? `<div class="metrica filtrada"><div class="numero">${totalFiltradas}</div><div class="etiqueta">🚫 Filtradas</div></div>` : ''}
+      </div>
+    `;
+  }
+
+  function htmlPatrones(patrones) {
+    if (!patrones || Object.keys(patrones).filter(k => patrones[k] > 0).length === 0) return '';
+    const nombres = {
+      evasion: '🙈 Evasión', agresividad_pasiva: '😤 Agresividad pasiva',
+      apatia: '😑 Apatía', desmotivacion: '😔 Desmotivación',
+      cooperativo: '🤝 Cooperativo', critico_constructivo: '💬 Crítico constructivo'
+    };
+    return `
+      <div class="patrones-wrap">
+        <h4>🎭 Patrones conductuales detectados</h4>
+        ${Object.entries(patrones).filter(([,v])=>v>0).map(([k,v])=>
+          `<span class="patron-item">${nombres[k]||k}: <strong>${v}</strong></span>`
+        ).join('')}
+      </div>
+    `;
+  }
+
+  function htmlRespuestasFiltradas(filtradas) {
+    if (!filtradas) return '';
+    let html = '';
+    const irr = filtradas.irrelevantes || [];
+    const ofe = filtradas.ofensivas    || [];
+    const ale = filtradas.alertas      || [];
+    const con = filtradas.conductuales || [];
+
+    if (irr.length) html += `
+      <div class="seccion-filtrada irrelevante">
+        <h4>🚫 Respuestas irrelevantes (${irr.length})</h4>
+        ${irr.map(r=>`<div class="respuesta-item">
+          <div class="texto-resp">"${r.texto}"</div>
+          <div class="meta-resp">${r.persona?`👤 ${r.persona} — `:''} ${r.razon}</div>
+        </div>`).join('')}
+      </div>`;
+
+    if (ofe.length) html += `
+      <div class="seccion-filtrada ofensiva">
+        <h4>⚠️ Respuestas ofensivas (${ofe.length})</h4>
+        ${ofe.map(r=>`<div class="respuesta-item">
+          <div class="texto-resp">"${r.texto}"</div>
+          <div class="meta-resp">${r.persona?`👤 ${r.persona} — `:''}${r.razon}</div>
+        </div>`).join('')}
+      </div>`;
+
+    if (ale.length) html += `
+      <div class="seccion-filtrada alerta">
+        <h4>🔴 Alertas de bienestar (${ale.length}) — Requieren atención inmediata</h4>
+        ${ale.map(r=>`<div class="respuesta-item">
+          <div class="texto-resp">"${r.texto}"</div>
+          <div class="meta-resp">${r.persona?`👤 ${r.persona} — `:''}${r.razon}</div>
+        </div>`).join('')}
+      </div>`;
+
+    if (con.length) html += `
+      <div class="seccion-filtrada conductual">
+        <h4>🎭 Patrones conductuales destacados (${con.length})</h4>
+        ${con.map(r=>`<div class="respuesta-item">
+          <div class="texto-resp">"${r.texto}"</div>
+          <div class="meta-resp">${r.persona?`👤 ${r.persona} — `:''}Patrón: ${r.patron||''} — ${r.razon}</div>
+        </div>`).join('')}
+      </div>`;
+
+    return html;
+  }
+
   function mostrarResultadosLote(data) {
     const el    = document.getElementById('contenido-resultados');
-    const total = data.total_respuestas_procesadas || 0;
-    const em    = data.emociones || {};
-    const ri    = data.niveles_riesgo || {};
     const temas = data.temas_principales_detectados || [];
 
     el.innerHTML = `
       <p style="font-size:0.8rem;color:var(--suave);margin-bottom:18px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">
-        ${total} respuestas analizadas ${data.archivo ? '— ' + data.archivo : ''}
+        ${data.total_respuestas_validas??0} respuestas válidas analizadas ${data.archivo?'— '+data.archivo:''}
       </p>
-      <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:11px;">Emociones detectadas</h4>
-      <div class="metricas" style="margin-bottom:22px">
-        <div class="metrica positiva"><div class="numero">${em.positivas??0}</div><div class="etiqueta">😊 Positivas</div></div>
-        <div class="metrica negativa"><div class="numero">${em.negativas??0}</div><div class="etiqueta">😟 Negativas</div></div>
-        <div class="metrica neutra"><div class="numero">${em.neutras??0}</div><div class="etiqueta">😐 Neutras</div></div>
-      </div>
-      <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:11px;">Niveles de riesgo</h4>
-      <div class="metricas" style="margin-bottom:22px">
-        <div class="metrica alto"><div class="numero">${ri.alto??0}</div><div class="etiqueta">🔴 Riesgo alto</div></div>
-        <div class="metrica medio"><div class="numero">${ri.medio??0}</div><div class="etiqueta">🟡 Riesgo medio</div></div>
-        <div class="metrica bajo"><div class="numero">${ri.bajo??0}</div><div class="etiqueta">🟢 Riesgo bajo</div></div>
-      </div>
-      ${temas.length ? `<div class="temas-wrap"><h4>Temas principales</h4><div class="temas">${temas.map((t,i)=>`<span class="tema" style="animation-delay:${i*0.05}s">${t}</span>`).join('')}</div></div>` : ''}
+      ${htmlMetricasEmociones(data.emociones||{}, data.niveles_riesgo||{}, data.total_respuestas_validas, data.total_respuestas_filtradas)}
+      ${htmlPatrones(data.patrones_conductuales)}
+      ${temas.length?`<div class="temas-wrap"><h4>Temas principales</h4><div class="temas">${temas.map((t,i)=>`<span class="tema" style="animation-delay:${i*0.05}s">${t}</span>`).join('')}</div></div>`:''}
       <div class="divider"></div>
       <div class="conclusion-box"><h4>📋 Conclusión general</h4><p>${data.conclusion_general}</p></div>
       <div class="conclusion-box oro"><h4>💡 Recomendación</h4><p>${data.recomendacion_general}</p></div>
+      ${data.respuestas_filtradas ? `<div class="seccion-titulo">🔍 Respuestas filtradas</div>${htmlRespuestasFiltradas(data.respuestas_filtradas)}` : ''}
     `;
-
-    document.getElementById('resultados').style.display = 'block';
-    document.getElementById('resultados').scrollIntoView({behavior:'smooth',block:'start'});
+    mostrarYScrollear();
   }
 
   function mostrarResultadosPorPersona(data) {
     const el       = document.getElementById('contenido-resultados');
-    const em       = data.emociones || {};
-    const ri       = data.niveles_riesgo || {};
     const temas    = data.temas_principales_detectados || [];
     const personas = data.analisis_por_persona || [];
     const grupos   = data.grupos || {};
 
-    // Construir tags de detección
     let tagsDeteccion = '';
-    if (data.columna_nombre_detectada)
-      tagsDeteccion += `<div class="info-tag">👤 Nombre: <strong>${data.columna_nombre_detectada}</strong></div>`;
-    if (data.columna_id_detectada)
-      tagsDeteccion += `<div class="info-tag">🪪 ID: <strong>${data.columna_id_detectada}</strong></div>`;
-    tagsDeteccion += `<div class="info-tag">📄 ${data.archivo}</div>`;
-    tagsDeteccion += `<div class="info-tag">👥 ${data.total_personas} personas · ${data.total_respuestas_procesadas} respuestas</div>`;
+    if (data.columna_nombre_detectada) tagsDeteccion += `<div class="info-tag">👤 Nombre: <strong>${data.columna_nombre_detectada}</strong></div>`;
+    if (data.columna_id_detectada)     tagsDeteccion += `<div class="info-tag">🪪 ID: <strong>${data.columna_id_detectada}</strong></div>`;
+    if (data.archivo)                  tagsDeteccion += `<div class="info-tag">📄 ${data.archivo}</div>`;
+    tagsDeteccion += `<div class="info-tag">👥 ${data.total_personas} personas · ${data.total_respuestas_validas} válidas · ${data.total_respuestas_filtradas||0} filtradas</div>`;
 
     el.innerHTML = `
       <div class="info-deteccion">${tagsDeteccion}</div>
-
-      <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:11px;">Emociones generales</h4>
-      <div class="metricas" style="margin-bottom:22px">
-        <div class="metrica positiva"><div class="numero">${em.positivas??0}</div><div class="etiqueta">😊 Positivas</div></div>
-        <div class="metrica negativa"><div class="numero">${em.negativas??0}</div><div class="etiqueta">😟 Negativas</div></div>
-        <div class="metrica neutra"><div class="numero">${em.neutras??0}</div><div class="etiqueta">😐 Neutras</div></div>
-        <div class="metrica alto"><div class="numero">${ri.alto??0}</div><div class="etiqueta">🔴 Riesgo alto</div></div>
-        <div class="metrica medio"><div class="numero">${ri.medio??0}</div><div class="etiqueta">🟡 Riesgo medio</div></div>
-        <div class="metrica bajo"><div class="numero">${ri.bajo??0}</div><div class="etiqueta">🟢 Riesgo bajo</div></div>
-      </div>
+      ${htmlMetricasEmociones(data.emociones||{}, data.niveles_riesgo||{}, data.total_respuestas_validas, data.total_respuestas_filtradas)}
+      ${htmlPatrones(data.patrones_conductuales)}
 
       <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:11px;">Clasificación por perfil</h4>
       <div class="grupos-wrap" style="margin-bottom:22px">
         <div class="grupo-card positivo">
           <h4>✅ Perfil positivo (${(grupos.perfil_positivo||[]).length})</h4>
-          ${(grupos.perfil_positivo||[]).map(p=>`<span class="grupo-persona">${p}</span>`).join('') || '<span style="font-size:0.82rem;color:var(--suave)">Ninguno</span>'}
+          ${(grupos.perfil_positivo||[]).map(p=>`<span class="grupo-persona">${p}</span>`).join('')||'<span style="font-size:0.82rem;color:var(--suave)">Ninguno</span>'}
         </div>
         <div class="grupo-card negativo">
           <h4>⚠️ Perfil negativo (${(grupos.perfil_negativo||[]).length})</h4>
-          ${(grupos.perfil_negativo||[]).map(p=>`<span class="grupo-persona">${p}</span>`).join('') || '<span style="font-size:0.82rem;color:var(--suave)">Ninguno</span>'}
+          ${(grupos.perfil_negativo||[]).map(p=>`<span class="grupo-persona">${p}</span>`).join('')||'<span style="font-size:0.82rem;color:var(--suave)">Ninguno</span>'}
         </div>
         <div class="grupo-card mixto">
           <h4>🔄 Perfil mixto (${(grupos.perfil_mixto||[]).length})</h4>
-          ${(grupos.perfil_mixto||[]).map(p=>`<span class="grupo-persona">${p}</span>`).join('') || '<span style="font-size:0.82rem;color:var(--suave)">Ninguno</span>'}
+          ${(grupos.perfil_mixto||[]).map(p=>`<span class="grupo-persona">${p}</span>`).join('')||'<span style="font-size:0.82rem;color:var(--suave)">Ninguno</span>'}
         </div>
       </div>
 
       <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:11px;">Detalle por persona</h4>
       <div class="tabla-wrap" style="margin-bottom:22px">
         <table class="tabla">
-          <thead>
-            <tr>
-              <th>Persona</th>
-              <th>😊 Positivas</th>
-              <th>😟 Negativas</th>
-              <th>😐 Neutras</th>
-              <th>Perfil</th>
-              <th>Riesgo</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Persona</th><th>😊</th><th>😟</th><th>😐</th><th>Perfil</th><th>Riesgo</th></tr></thead>
           <tbody>
-            ${personas.map(p => `
-              <tr>
-                <td><strong>${p.persona}</strong></td>
-                <td style="color:var(--verde-med);font-weight:600;text-align:center">${p.respuestas_positivas}</td>
-                <td style="color:var(--rojo);font-weight:600;text-align:center">${p.respuestas_negativas}</td>
-                <td style="color:var(--amarillo);font-weight:600;text-align:center">${p.respuestas_neutras}</td>
-                <td><span class="badge ${p.perfil_emocional.replace(/ /g,'-')}">${p.perfil_emocional}</span></td>
-                <td><span class="badge ${p.nivel_riesgo_general}">${p.nivel_riesgo_general}</span></td>
-              </tr>
-            `).join('')}
+            ${personas.map(p=>`<tr>
+              <td><strong>${p.persona}</strong></td>
+              <td style="color:var(--verde-med);font-weight:600;text-align:center">${p.respuestas_positivas}</td>
+              <td style="color:var(--rojo);font-weight:600;text-align:center">${p.respuestas_negativas}</td>
+              <td style="color:var(--amarillo);font-weight:600;text-align:center">${p.respuestas_neutras}</td>
+              <td><span class="badge ${p.perfil_emocional.replace(/ /g,'-')}">${p.perfil_emocional}</span></td>
+              <td><span class="badge ${p.nivel_riesgo_general}">${p.nivel_riesgo_general}</span></td>
+            </tr>`).join('')}
           </tbody>
         </table>
       </div>
 
-      ${temas.length ? `<div class="temas-wrap"><h4>Temas principales detectados</h4><div class="temas">${temas.map((t,i)=>`<span class="tema" style="animation-delay:${i*0.05}s">${t}</span>`).join('')}</div></div>` : ''}
-
+      ${temas.length?`<div class="temas-wrap"><h4>Temas principales</h4><div class="temas">${temas.map((t,i)=>`<span class="tema" style="animation-delay:${i*0.05}s">${t}</span>`).join('')}</div></div>`:''}
       <div class="divider"></div>
       <div class="conclusion-box"><h4>📋 Conclusión general</h4><p>${data.conclusion_general}</p></div>
       <div class="conclusion-box oro"><h4>💡 Recomendación</h4><p>${data.recomendacion_general}</p></div>
+      ${data.respuestas_filtradas?`<div class="seccion-titulo">🔍 Respuestas filtradas</div>${htmlRespuestasFiltradas(data.respuestas_filtradas)}`:''}
     `;
+    mostrarYScrollear();
+  }
 
-    document.getElementById('resultados').style.display = 'block';
-    document.getElementById('resultados').scrollIntoView({behavior:'smooth',block:'start'});
+  function mostrarMultiplesHojas(data) {
+    const el = document.getElementById('contenido-resultados');
+    let html = `<p style="font-size:0.8rem;color:var(--suave);margin-bottom:18px;font-weight:600;">📄 ${data.archivo} — ${data.total_hojas} hojas procesadas</p>`;
+
+    data.resultados_por_hoja.forEach((hoja, i) => {
+      html += `<div class="seccion-titulo">Hoja ${hoja.hoja}</div>`;
+      if (hoja.analisis_por_persona && hoja.analisis_por_persona.length > 0) {
+        html += `<p style="font-size:0.82rem;color:var(--suave);margin-bottom:12px;">👥 ${hoja.total_personas} personas · ${hoja.total_respuestas_validas} válidas · ${hoja.total_respuestas_filtradas||0} filtradas</p>`;
+        html += htmlMetricasEmociones(hoja.emociones||{}, hoja.niveles_riesgo||{});
+        html += htmlPatrones(hoja.patrones_conductuales);
+        html += `<div class="tabla-wrap"><table class="tabla">
+          <thead><tr><th>Persona</th><th>😊</th><th>😟</th><th>😐</th><th>Perfil</th><th>Riesgo</th></tr></thead>
+          <tbody>${(hoja.analisis_por_persona||[]).map(p=>`<tr>
+            <td><strong>${p.persona}</strong></td>
+            <td style="color:var(--verde-med);font-weight:600;text-align:center">${p.respuestas_positivas}</td>
+            <td style="color:var(--rojo);font-weight:600;text-align:center">${p.respuestas_negativas}</td>
+            <td style="color:var(--amarillo);font-weight:600;text-align:center">${p.respuestas_neutras}</td>
+            <td><span class="badge ${p.perfil_emocional.replace(/ /g,'-')}">${p.perfil_emocional}</span></td>
+            <td><span class="badge ${p.nivel_riesgo_general}">${p.nivel_riesgo_general}</span></td>
+          </tr>`).join('')}</tbody>
+        </table></div>`;
+      } else {
+        html += htmlMetricasEmociones(hoja.emociones||{}, hoja.niveles_riesgo||{}, hoja.total_respuestas_validas, hoja.total_respuestas_filtradas);
+        html += htmlPatrones(hoja.patrones_conductuales);
+      }
+      html += `<div class="conclusion-box"><h4>📋 Conclusión</h4><p>${hoja.conclusion_general}</p></div>`;
+      html += `<div class="conclusion-box oro"><h4>💡 Recomendación</h4><p>${hoja.recomendacion_general}</p></div>`;
+      if (hoja.respuestas_filtradas) html += `<div class="seccion-titulo" style="font-size:0.95rem">🔍 Filtradas — Hoja ${hoja.hoja}</div>${htmlRespuestasFiltradas(hoja.respuestas_filtradas)}`;
+      if (i < data.resultados_por_hoja.length - 1) html += '<div class="divider"></div>';
+    });
+
+    el.innerHTML = html;
+    mostrarYScrollear();
   }
 
   function mostrarResultadoIndividual(data, texto) {
     const el = document.getElementById('contenido-resultados');
+    const categoriaColor = { valida:'var(--verde)', irrelevante:'var(--morado)', ofensiva:'var(--rojo)', alerta:'var(--naranja)', conductual:'var(--amarillo)' };
+    const categoriaEmoji = { valida:'✅', irrelevante:'🚫', ofensiva:'⚠️', alerta:'🔴', conductual:'🎭' };
+    const cat = data.categoria || 'valida';
+
     el.innerHTML = `
       <div style="background:var(--gris);border-radius:12px;padding:18px;margin-bottom:16px">
-        <div style="font-size:0.9rem;color:var(--texto);margin-bottom:10px;line-height:1.5;font-style:italic">"${texto}"</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <div style="font-size:0.9rem;color:var(--texto);margin-bottom:12px;line-height:1.5;font-style:italic">"${texto}"</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+          <span style="background:${categoriaColor[cat]}22;color:${categoriaColor[cat]};border-radius:20px;padding:4px 12px;font-size:0.78rem;font-weight:600;border:1px solid ${categoriaColor[cat]}44">
+            ${categoriaEmoji[cat]} ${cat.charAt(0).toUpperCase()+cat.slice(1)}
+          </span>
           <span class="badge ${data.emocion_detectada}">${data.emocion_detectada==='positiva'?'😊':data.emocion_detectada==='negativa'?'😟':'😐'} ${data.emocion_detectada}</span>
           <span class="badge ${data.nivel_riesgo}">⚠️ Riesgo ${data.nivel_riesgo}</span>
-          <span class="badge" style="background:#f0f0f0;color:var(--suave)">🎯 Confianza: ${Math.round(data.confianza_modelo*100)}%</span>
+          ${data.patron_conductual&&data.patron_conductual!=='ninguno'?`<span style="background:var(--amarillo-claro);color:var(--amarillo);border-radius:20px;padding:4px 12px;font-size:0.78rem;font-weight:600">🎭 ${data.patron_conductual}</span>`:''}
         </div>
+        ${data.razon_categoria?`<p style="font-size:0.8rem;color:var(--suave)">${data.razon_categoria}</p>`:''}
       </div>
       <div class="conclusion-box"><h4>🧠 Interpretación</h4><p>${data.interpretacion}</p></div>
-      ${data.palabras_clave?.length ? `<div class="temas-wrap" style="margin-top:14px"><h4>Palabras clave</h4><div class="temas">${data.palabras_clave.map((t,i)=>`<span class="tema" style="animation-delay:${i*0.05}s">${t}</span>`).join('')}</div></div>` : ''}
+      ${data.palabras_clave?.length?`<div class="temas-wrap" style="margin-top:14px"><h4>Palabras clave</h4><div class="temas">${data.palabras_clave.map((t,i)=>`<span class="tema" style="animation-delay:${i*0.05}s">${t}</span>`).join('')}</div></div>`:''}
     `;
+    mostrarYScrollear();
+  }
+
+  function mostrarYScrollear() {
     document.getElementById('resultados').style.display = 'block';
     document.getElementById('resultados').scrollIntoView({behavior:'smooth',block:'start'});
   }
@@ -604,7 +632,7 @@
 
   function exportarJSON() {
     if (!datosGuardados) return;
-    const blob = new Blob([JSON.stringify(datosGuardados, null, 2)], {type:'application/json'});
+    const blob = new Blob([JSON.stringify(datosGuardados,null,2)], {type:'application/json'});
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement('a');
     a.href = url; a.download = 'analisis_uaemex.json'; a.click();
