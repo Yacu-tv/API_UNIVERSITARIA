@@ -23,7 +23,7 @@ nlp = spacy.load("es_core_news_sm")
 app = FastAPI(
     title="API de Análisis Cualitativo con IA",
     description="Plataforma de análisis cualitativo con filtrado inteligente de respuestas",
-    version="4.0.0"
+    version="4.1.0"
 )
 
 app.add_middleware(
@@ -339,17 +339,18 @@ def leer_csv_robusto(contenido: bytes) -> pd.DataFrame:
     raise HTTPException(status_code=400, detail="No se pudo leer el archivo CSV.")
 
 
-def leer_dataframes(archivo: UploadFile) -> List[pd.DataFrame]:
+def leer_dataframes(archivo: UploadFile) -> List[tuple]:
+    """Devuelve lista de tuplas (nombre_hoja, DataFrame)."""
     contenido = archivo.file.read()
     nombre    = archivo.filename.lower()
     if nombre.endswith(".csv"):
-        return [leer_csv_robusto(contenido)]
+        return [("Datos", leer_csv_robusto(contenido))]
     elif nombre.endswith(".xlsx") or nombre.endswith(".xls"):
         todas_hojas = pd.read_excel(io.BytesIO(contenido), sheet_name=None)
-        return list(todas_hojas.values())
+        return list(todas_hojas.items())  # (nombre_hoja, df)
     elif nombre.endswith(".json"):
         datos = json.loads(contenido)
-        return [pd.DataFrame(datos if isinstance(datos, list) else [datos])]
+        return [("Datos", pd.DataFrame(datos if isinstance(datos, list) else [datos]))]
     else:
         raise HTTPException(status_code=400, detail="Formato no soportado.")
 
@@ -544,7 +545,7 @@ def procesar_dataframe(df: pd.DataFrame, contexto: str, filtros: dict = {}) -> O
 def inicio():
     return {
         "nombre":  "API de Análisis Cualitativo con IA",
-        "version": "4.0.0",
+        "version": "4.1.0",
         "estado":  "funcionando",
         "endpoints": {
             "analizar_individual":    "/analizar",
@@ -657,18 +658,23 @@ async def analizar_archivo(
     if not dataframes:
         raise HTTPException(status_code=400, detail="No se encontraron datos en el archivo.")
 
+    # Si solo hay una hoja/fuente, devolver resultado directo (compatibilidad)
     if len(dataframes) == 1:
-        resultado = procesar_dataframe(dataframes[0], contexto, filtros)
+        nombre_hoja, df = dataframes[0]
+        resultado = procesar_dataframe(df, contexto, filtros)
         if resultado is None:
             raise HTTPException(status_code=400, detail="No se detectaron columnas con respuestas abiertas.")
-        resultado["archivo"] = archivo.filename
+        resultado["archivo"]     = archivo.filename
+        resultado["nombre_hoja"] = nombre_hoja
         return resultado
 
+    # Múltiples hojas — procesar cada una con su nombre real
     resultados_por_hoja = []
-    for i, df in enumerate(dataframes):
+    for nombre_hoja, df in dataframes:
         resultado = procesar_dataframe(df, contexto, filtros)
-        if resultado is None: continue
-        resultado["hoja"] = i + 1
+        if resultado is None:
+            continue
+        resultado["nombre_hoja"] = nombre_hoja
         resultados_por_hoja.append(resultado)
 
     if not resultados_por_hoja:

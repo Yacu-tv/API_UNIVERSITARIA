@@ -174,6 +174,78 @@
     .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--oro), transparent); margin: 24px 0; }
     .seccion-titulo { font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: var(--verde-oscuro); margin: 24px 0 14px; padding-bottom: 8px; border-bottom: 2px solid var(--oro-claro); }
 
+    /* PESTAÑAS DE HOJAS — estilo libro/Excel */
+    .hojas-nav-wrap {
+      background: var(--verde-oscuro);
+      border-radius: 12px 12px 0 0;
+      padding: 4px 4px 0;
+      display: flex;
+      gap: 3px;
+      overflow-x: auto;
+      scrollbar-width: thin;
+    }
+    .hojas-nav-wrap::-webkit-scrollbar { height: 5px; }
+    .hojas-nav-wrap::-webkit-scrollbar-thumb { background: var(--oro); border-radius: 10px; }
+
+    .hoja-tab {
+      flex-shrink: 0;
+      padding: 11px 20px 13px;
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.65);
+      border: none;
+      border-radius: 10px 10px 0 0;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .hoja-tab:hover:not(.hoja-tab-activa) { background: rgba(255,255,255,0.15); color: var(--blanco); }
+    .hoja-tab-activa {
+      background: var(--blanco);
+      color: var(--verde-oscuro);
+      font-weight: 700;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+    }
+    .hoja-tab-badge {
+      background: var(--oro);
+      color: var(--verde-oscuro);
+      border-radius: 20px;
+      padding: 1px 7px;
+      font-size: 0.68rem;
+      font-weight: 700;
+    }
+    .hoja-tab-activa .hoja-tab-badge { background: var(--verde); color: var(--blanco); }
+
+    .hojas-contenido-wrap {
+      background: var(--blanco);
+      border: 1px solid #e0e0d8;
+      border-top: none;
+      border-radius: 0 0 12px 12px;
+      padding: 24px;
+      margin-bottom: 22px;
+      min-height: 200px;
+    }
+
+    .hoja-pagina-info {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px dashed #d5e3d5;
+    }
+    .hoja-pagina-info .hoja-titulo { font-family: 'DM Serif Display', serif; font-size: 1.15rem; color: var(--verde-oscuro); }
+    .hoja-pagina-nav { display: flex; gap: 6px; align-items: center; }
+    .hoja-pagina-btn {
+      background: var(--verde-claro); border: 1px solid #a8c5a8; color: var(--verde-oscuro);
+      border-radius: 8px; width: 32px; height: 32px; cursor: pointer; font-size: 0.9rem;
+      display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+    }
+    .hoja-pagina-btn:hover:not(:disabled) { background: var(--verde); color: var(--blanco); }
+    .hoja-pagina-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .hoja-pagina-contador { font-size: 0.8rem; color: var(--suave); font-weight: 600; padding: 0 4px; }
+
     @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
     @media (max-width: 600px) {
       header { padding: 0 16px; } main { padding: 20px 14px 40px; }
@@ -192,7 +264,7 @@
       <p>Universidad Autónoma del Estado de México</p>
     </div>
   </div>
-  <div class="header-version">v4.0.0 — LLaMA 3 · Groq</div>
+  <div class="header-version">v4.1.0 — LLaMA 3 · Groq</div>
 </header>
 
 <main>
@@ -559,39 +631,113 @@
     mostrarYScrollear();
   }
 
+  let hojasData = [];
+  let hojaActivaIndex = 0;
+
   function mostrarMultiplesHojas(data) {
+    hojasData = data.resultados_por_hoja;
+    hojaActivaIndex = 0;
+    renderizarVistaHojas(data.archivo);
+  }
+
+  function renderizarVistaHojas(nombreArchivo) {
     const el = document.getElementById('contenido-resultados');
-    let html = `<p style="font-size:0.8rem;color:var(--suave);margin-bottom:18px;font-weight:600;">📄 ${data.archivo} — ${data.total_hojas} hojas procesadas</p>`;
 
-    data.resultados_por_hoja.forEach((hoja, i) => {
-      html += `<div class="seccion-titulo">Hoja ${hoja.hoja}</div>`;
-      if (hoja.analisis_por_persona && hoja.analisis_por_persona.length > 0) {
-        html += `<p style="font-size:0.82rem;color:var(--suave);margin-bottom:12px;">👥 ${hoja.total_personas} personas · ${hoja.total_respuestas_validas} válidas · ${hoja.total_respuestas_filtradas||0} filtradas</p>`;
-        html += htmlMetricasEmociones(hoja.emociones||{}, hoja.niveles_riesgo||{});
-        html += htmlPatrones(hoja.patrones_conductuales);
-        html += `<div class="tabla-wrap"><table class="tabla">
-          <thead><tr><th>Persona</th><th>😊</th><th>😟</th><th>😐</th><th>Perfil</th><th>Riesgo</th></tr></thead>
-          <tbody>${(hoja.analisis_por_persona||[]).map(p=>`<tr>
-            <td><strong>${p.persona}</strong></td>
-            <td style="color:var(--verde-med);font-weight:600;text-align:center">${p.respuestas_positivas}</td>
-            <td style="color:var(--rojo);font-weight:600;text-align:center">${p.respuestas_negativas}</td>
-            <td style="color:var(--amarillo);font-weight:600;text-align:center">${p.respuestas_neutras}</td>
-            <td><span class="badge ${p.perfil_emocional.replace(/ /g,'-')}">${p.perfil_emocional}</span></td>
-            <td><span class="badge ${p.nivel_riesgo_general}">${p.nivel_riesgo_general}</span></td>
-          </tr>`).join('')}</tbody>
-        </table></div>`;
-      } else {
-        html += htmlMetricasEmociones(hoja.emociones||{}, hoja.niveles_riesgo||{}, hoja.total_respuestas_validas, hoja.total_respuestas_filtradas);
-        html += htmlPatrones(hoja.patrones_conductuales);
-      }
-      html += `<div class="conclusion-box"><h4>📋 Conclusión</h4><p>${hoja.conclusion_general}</p></div>`;
-      html += `<div class="conclusion-box oro"><h4>💡 Recomendación</h4><p>${hoja.recomendacion_general}</p></div>`;
-      if (hoja.respuestas_filtradas) html += `<div class="seccion-titulo" style="font-size:0.95rem">🔍 Filtradas — Hoja ${hoja.hoja}</div>${htmlRespuestasFiltradas(hoja.respuestas_filtradas)}`;
-      if (i < data.resultados_por_hoja.length - 1) html += '<div class="divider"></div>';
-    });
+    const tabsHtml = hojasData.map((hoja, i) => {
+      const numFiltradas = hoja.respuestas_filtradas
+        ? (hoja.respuestas_filtradas.irrelevantes||[]).length + (hoja.respuestas_filtradas.ofensivas||[]).length
+          + (hoja.respuestas_filtradas.alertas||[]).length
+        : 0;
+      const numAlertas = hoja.respuestas_filtradas ? (hoja.respuestas_filtradas.alertas||[]).length : 0;
+      return `
+        <button class="hoja-tab ${i===hojaActivaIndex?'hoja-tab-activa':''}" onclick="irAHoja(${i})">
+          📑 ${hoja.nombre_hoja || 'Hoja ' + (i+1)}
+          ${numAlertas > 0 ? `<span class="hoja-tab-badge" style="background:var(--rojo);color:white">🔴 ${numAlertas}</span>` : ''}
+        </button>
+      `;
+    }).join('');
 
-    el.innerHTML = html;
+    el.innerHTML = `
+      <p style="font-size:0.8rem;color:var(--suave);margin-bottom:14px;font-weight:600;">
+        📄 ${nombreArchivo} — ${hojasData.length} hoja${hojasData.length>1?'s':''} detectada${hojasData.length>1?'s':''}
+      </p>
+      <div class="hojas-nav-wrap">${tabsHtml}</div>
+      <div class="hojas-contenido-wrap" id="hoja-contenido-actual"></div>
+    `;
+
+    renderizarContenidoHoja();
     mostrarYScrollear();
+  }
+
+  function irAHoja(index) {
+    hojaActivaIndex = index;
+    document.querySelectorAll('.hoja-tab').forEach((t, i) => t.classList.toggle('hoja-tab-activa', i === index));
+    renderizarContenidoHoja();
+    document.getElementById('hoja-contenido-actual').scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+
+  function renderizarContenidoHoja() {
+    const hoja = hojasData[hojaActivaIndex];
+    const wrap = document.getElementById('hoja-contenido-actual');
+    const temas = hoja.temas_principales_detectados || [];
+
+    let html = `
+      <div class="hoja-pagina-info">
+        <span class="hoja-titulo">📑 ${hoja.nombre_hoja || 'Hoja ' + (hojaActivaIndex+1)}</span>
+        <div class="hoja-pagina-nav">
+          <button class="hoja-pagina-btn" onclick="irAHoja(${hojaActivaIndex-1})" ${hojaActivaIndex===0?'disabled':''} title="Hoja anterior">‹</button>
+          <span class="hoja-pagina-contador">${hojaActivaIndex+1} / ${hojasData.length}</span>
+          <button class="hoja-pagina-btn" onclick="irAHoja(${hojaActivaIndex+1})" ${hojaActivaIndex===hojasData.length-1?'disabled':''} title="Hoja siguiente">›</button>
+        </div>
+      </div>
+    `;
+
+    if (hoja.analisis_por_persona && hoja.analisis_por_persona.length > 0) {
+      const grupos = hoja.grupos || {};
+      html += `<div class="info-deteccion">
+        ${hoja.columna_nombre_detectada?`<div class="info-tag">👤 Nombre: <strong>${hoja.columna_nombre_detectada}</strong></div>`:''}
+        ${hoja.columna_id_detectada?`<div class="info-tag">🪪 ID: <strong>${hoja.columna_id_detectada}</strong></div>`:''}
+        <div class="info-tag">👥 ${hoja.total_personas} personas · ${hoja.total_respuestas_validas} válidas · ${hoja.total_respuestas_filtradas||0} filtradas</div>
+      </div>`;
+      html += htmlMetricasEmociones(hoja.emociones||{}, hoja.niveles_riesgo||{});
+      html += htmlPatrones(hoja.patrones_conductuales);
+      html += `
+        <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:11px;">Clasificación por perfil</h4>
+        <div class="grupos-wrap" style="margin-bottom:22px">
+          <div class="grupo-card positivo"><h4>✅ Perfil positivo (${(grupos.perfil_positivo||[]).length})</h4>${(grupos.perfil_positivo||[]).map(p=>`<span class="grupo-persona">${p}</span>`).join('')||'<span style="font-size:0.82rem;color:var(--suave)">Ninguno</span>'}</div>
+          <div class="grupo-card negativo"><h4>⚠️ Perfil negativo (${(grupos.perfil_negativo||[]).length})</h4>${(grupos.perfil_negativo||[]).map(p=>`<span class="grupo-persona">${p}</span>`).join('')||'<span style="font-size:0.82rem;color:var(--suave)">Ninguno</span>'}</div>
+          <div class="grupo-card mixto"><h4>🔄 Perfil mixto (${(grupos.perfil_mixto||[]).length})</h4>${(grupos.perfil_mixto||[]).map(p=>`<span class="grupo-persona">${p}</span>`).join('')||'<span style="font-size:0.82rem;color:var(--suave)">Ninguno</span>'}</div>
+        </div>
+        <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:11px;">Detalle por persona</h4>
+        <div class="tabla-wrap" style="margin-bottom:22px">
+          <table class="tabla">
+            <thead><tr><th>Persona</th><th>😊</th><th>😟</th><th>😐</th><th>Perfil</th><th>Riesgo</th></tr></thead>
+            <tbody>${hoja.analisis_por_persona.map(p=>`<tr>
+              <td><strong>${p.persona}</strong></td>
+              <td style="color:var(--verde-med);font-weight:600;text-align:center">${p.respuestas_positivas}</td>
+              <td style="color:var(--rojo);font-weight:600;text-align:center">${p.respuestas_negativas}</td>
+              <td style="color:var(--amarillo);font-weight:600;text-align:center">${p.respuestas_neutras}</td>
+              <td><span class="badge ${p.perfil_emocional.replace(/ /g,'-')}">${p.perfil_emocional}</span></td>
+              <td><span class="badge ${p.nivel_riesgo_general}">${p.nivel_riesgo_general}</span></td>
+            </tr>`).join('')}</tbody>
+          </table>
+        </div>
+      `;
+    } else {
+      html += htmlMetricasEmociones(hoja.emociones||{}, hoja.niveles_riesgo||{}, hoja.total_respuestas_validas, hoja.total_respuestas_filtradas);
+      html += htmlPatrones(hoja.patrones_conductuales);
+    }
+
+    if (temas.length) html += `<div class="temas-wrap"><h4>Temas principales</h4><div class="temas">${temas.map((t,i)=>`<span class="tema" style="animation-delay:${i*0.05}s">${t}</span>`).join('')}</div></div>`;
+
+    html += `<div class="conclusion-box"><h4>📋 Conclusión</h4><p>${hoja.conclusion_general}</p></div>`;
+    html += `<div class="conclusion-box oro"><h4>💡 Recomendación</h4><p>${hoja.recomendacion_general}</p></div>`;
+
+    if (hoja.respuestas_filtradas) {
+      html += `<div class="seccion-titulo">🔍 Respuestas filtradas en esta hoja</div>${htmlRespuestasFiltradas(hoja.respuestas_filtradas)}`;
+    }
+
+    wrap.innerHTML = html;
   }
 
   function mostrarResultadoIndividual(data, texto) {
