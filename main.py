@@ -23,7 +23,7 @@ nlp = spacy.load("es_core_news_sm")
 app = FastAPI(
     title="API de Análisis Cualitativo con IA",
     description="Plataforma de análisis cualitativo con filtrado inteligente de respuestas",
-    version="4.1.0"
+    version="5.0.0"
 )
 
 app.add_middleware(
@@ -117,55 +117,88 @@ Responde solo con el JSON:"""
         return {"categoria": "valida", "razon": "No se pudo clasificar"}
 
 
-def analizar_con_groq(texto: str, contexto: str = "análisis cualitativo") -> dict:
-    prompt = f"""Eres un sistema experto en análisis cualitativo de texto.
+def analizar_con_groq(texto: str, contexto: str = "análisis cualitativo", metadatos: dict = {}) -> dict:
+    """
+    Análisis universal adaptativo. Se adapta automáticamente al tipo de contenido:
+    emocional, propuestas, académico, ciudadano, institucional, personal, jurídico, etc.
+    """
+    meta_str = ""
+    if metadatos:
+        meta_str = "\nMetadatos: " + ", ".join(
+            [f"{k}: {v}" for k, v in metadatos.items() if v and str(v) not in ["nan","","[]"]]
+        )
 
-Analiza la siguiente respuesta en el contexto de: {contexto}
+    prompt = f"""Eres un experto en análisis cualitativo universal. Analiza cualquier tipo de texto sin importar el ámbito: emocional, propuestas institucionales, aportaciones ciudadanas, evaluaciones académicas, documentos jurídicos, testimonios, ideas, quejas operativas, o cualquier otro contenido.
 
-Responde ÚNICAMENTE con este formato JSON, sin texto adicional:
+Contexto: {contexto or "análisis general"}{meta_str}
+
+Texto:
+\"\"\"{texto[:2000]}\"\"\"
+
+Lee el texto libremente y responde ÚNICAMENTE con este JSON:
 
 {{
-  "emocion": "positiva" | "negativa" | "neutra",
-  "nivel_riesgo": "alto" | "medio" | "bajo",
+  "tipo_contenido": "qué tipo de texto es (ej: propuesta de reforma, encuesta emocional, queja operativa, evaluación académica, testimonio personal, idea creativa, denuncia, documento jurídico, etc.)",
+  "resumen": "qué dice o pide en 2 oraciones claras",
+  "temas": ["tema1", "tema2", "tema3"],
+  "urgencia": "alta" | "media" | "baja",
+  "relevancia": "alta" | "media" | "baja",
+  "accion_recomendada": "acción concreta y específica a tomar con este contenido",
+  "dimension_principal": "dimensión más importante (emocional, propositiva, jurídica, académica, operativa, social, personal, etc.)",
+  "emocion": "positiva" | "negativa" | "neutra" | "no_aplica",
+  "nivel_riesgo": "alto" | "medio" | "bajo" | "no_aplica",
   "confianza": número entre 0.0 y 1.0,
-  "interpretacion": "breve explicación en español de máximo 2 oraciones",
-  "patron_conductual": "ninguno" | "evasion" | "agresividad_pasiva" | "apatia" | "desmotivacion" | "cooperativo" | "critico_constructivo"
+  "interpretacion": "análisis de 2-3 oraciones adaptado al tipo de contenido",
+  "patron_conductual": "ninguno" | "evasion" | "agresividad_pasiva" | "apatia" | "desmotivacion" | "cooperativo" | "critico_constructivo",
+  "palabras_clave": ["palabra1", "palabra2", "palabra3"]
 }}
 
-Criterios de nivel de riesgo:
-- alto: menciona situaciones graves, crisis, problemas severos, urgencia
-- medio: menciona dificultades, insatisfacción, problemas moderados
-- bajo: respuesta positiva, neutra o sin señales de alerta
-
-Respuesta a analizar:
-"{texto}"
-
-Responde solo con el JSON:"""
+Reglas:
+- Si es propuesta/documento/idea: emocion y nivel_riesgo pueden ser "no_aplica"
+- Si es emocional/bienestar: llena emocion y nivel_riesgo normalmente
+- temas: 1-3 palabras cada uno
+- Responde SOLO con el JSON"""
 
     try:
         respuesta = cliente_groq.chat.completions.create(
             model="llama-3.1-8b-instant",
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.1,
-            max_tokens=250
+            temperature=0.2,
+            max_tokens=450
         )
         contenido = respuesta.choices[0].message.content.strip()
-        contenido = contenido.replace("```json", "").replace("```", "").strip()
+        contenido = contenido.replace("```json","").replace("```","").strip()
         resultado = json.loads(contenido)
         return {
-            "emocion_detectada":  resultado.get("emocion", "neutra"),
-            "nivel_riesgo":       resultado.get("nivel_riesgo", "bajo"),
-            "confianza_modelo":   round(float(resultado.get("confianza", 0.5)), 2),
-            "interpretacion":     resultado.get("interpretacion", "Sin interpretación disponible."),
-            "patron_conductual":  resultado.get("patron_conductual", "ninguno")
+            "tipo_contenido":      resultado.get("tipo_contenido", "texto general"),
+            "resumen":             resultado.get("resumen", "Sin resumen."),
+            "temas":               resultado.get("temas", []),
+            "urgencia":            resultado.get("urgencia", "baja"),
+            "relevancia":          resultado.get("relevancia", "media"),
+            "accion_recomendada":  resultado.get("accion_recomendada", "Revisar manualmente."),
+            "dimension_principal": resultado.get("dimension_principal", "general"),
+            "emocion_detectada":   resultado.get("emocion", "no_aplica"),
+            "nivel_riesgo":        resultado.get("nivel_riesgo", "no_aplica"),
+            "confianza_modelo":    round(float(resultado.get("confianza", 0.5)), 2),
+            "interpretacion":      resultado.get("interpretacion", "Sin interpretación."),
+            "patron_conductual":   resultado.get("patron_conductual", "ninguno"),
+            "palabras_clave":      resultado.get("palabras_clave", [])
         }
     except Exception as e:
         return {
-            "emocion_detectada":  "neutra",
-            "nivel_riesgo":       "bajo",
-            "confianza_modelo":   0.0,
-            "interpretacion":     f"Error al analizar: {str(e)}",
-            "patron_conductual":  "ninguno"
+            "tipo_contenido":      "error",
+            "resumen":             f"Error: {str(e)}",
+            "temas":               [],
+            "urgencia":            "baja",
+            "relevancia":          "baja",
+            "accion_recomendada":  "Revisar manualmente.",
+            "dimension_principal": "error",
+            "emocion_detectada":   "no_aplica",
+            "nivel_riesgo":        "no_aplica",
+            "confianza_modelo":    0.0,
+            "interpretacion":      f"Error: {str(e)}",
+            "patron_conductual":   "ninguno",
+            "palabras_clave":      []
         }
 
 
@@ -225,31 +258,65 @@ def perfil_persona(positivas: int, negativas: int, neutras: int) -> str:
     else: return "mixto"
 
 
+def agrupar_por_temas(resultados: List[dict]) -> List[dict]:
+    """Agrupa entradas que hablan de temas similares aunque lo digan diferente."""
+    todos_temas = []
+    for r in resultados:
+        todos_temas.extend(r.get("temas", []))
+    if not todos_temas:
+        return []
+    grupos = []
+    for tema, _ in Counter(todos_temas).most_common(8):
+        miembros = []
+        for r in resultados:
+            if tema in r.get("temas", []):
+                miembros.append({
+                    "id":       r.get("id", r.get("persona", "")),
+                    "resumen":  r.get("resumen", r.get("interpretacion", ""))[:120],
+                    "urgencia": r.get("urgencia", "baja")
+                })
+        if miembros:
+            urg = "alta" if any(m["urgencia"]=="alta" for m in miembros) \
+                else "media" if any(m["urgencia"]=="media" for m in miembros) else "baja"
+            grupos.append({"tema": tema, "total": len(miembros), "urgencia_grupo": urg, "miembros": miembros})
+    return grupos
+
+
 def generar_resumen_lote(resultados: List[dict], contexto: str, temas: List[str] = [],
                           patrones: dict = {}) -> dict:
-    positivas    = sum(1 for r in resultados if r["emocion_detectada"] == "positiva")
-    negativas    = sum(1 for r in resultados if r["emocion_detectada"] == "negativa")
-    neutras      = sum(1 for r in resultados if r["emocion_detectada"] == "neutra")
-    riesgo_alto  = sum(1 for r in resultados if r["nivel_riesgo"] == "alto")
-    riesgo_medio = sum(1 for r in resultados if r["nivel_riesgo"] == "medio")
-    riesgo_bajo  = sum(1 for r in resultados if r["nivel_riesgo"] == "bajo")
+    """Resumen universal: funciona para cualquier tipo de contenido."""
     total        = len(resultados)
+    positivas    = sum(1 for r in resultados if r.get("emocion_detectada") == "positiva")
+    negativas    = sum(1 for r in resultados if r.get("emocion_detectada") == "negativa")
+    neutras      = sum(1 for r in resultados if r.get("emocion_detectada") == "neutra")
+    riesgo_alto  = sum(1 for r in resultados if r.get("nivel_riesgo") == "alto")
+    riesgo_medio = sum(1 for r in resultados if r.get("nivel_riesgo") == "medio")
+    riesgo_bajo  = sum(1 for r in resultados if r.get("nivel_riesgo") == "bajo")
 
-    patrones_str = ", ".join([f"{k}: {v}" for k, v in patrones.items() if v > 0]) or "ninguno detectado"
+    tipos_detectados = Counter(r.get("tipo_contenido","") for r in resultados)
+    dimensiones      = Counter(r.get("dimension_principal","") for r in resultados)
+    urgencias        = Counter(r.get("urgencia","baja") for r in resultados)
+    patrones_str     = ", ".join([f"{k}: {v}" for k,v in patrones.items() if v > 0]) or "ninguno"
+    acciones_urgentes = [r.get("accion_recomendada","") for r in resultados if r.get("urgencia")=="alta" and r.get("accion_recomendada")][:5]
 
-    prompt = f"""Eres un experto en análisis cualitativo.
-Se analizaron {total} respuestas válidas en el contexto de: {contexto}
+    prompt = f"""Eres un experto en síntesis cualitativa institucional universal.
 
-Resultados:
-- Emociones positivas: {positivas} | negativas: {negativas} | neutras: {neutras}
-- Riesgo alto: {riesgo_alto} | medio: {riesgo_medio} | bajo: {riesgo_bajo}
-- Temas principales: {', '.join(temas) if temas else 'no disponibles'}
-- Patrones conductuales: {patrones_str}
+Se analizaron {total} entradas en el contexto: {contexto or "análisis general"}
+
+Tipos de contenido: {dict(tipos_detectados.most_common(5))}
+Dimensiones: {dict(dimensiones.most_common(5))}
+Urgencias: alta={urgencias.get('alta',0)}, media={urgencias.get('media',0)}, baja={urgencias.get('baja',0)}
+Emociones (si aplica): positivas={positivas}, negativas={negativas}, neutras={neutras}
+Riesgo (si aplica): alto={riesgo_alto}, medio={riesgo_medio}, bajo={riesgo_bajo}
+Temas frecuentes: {', '.join(temas) if temas else 'no disponibles'}
+Patrones conductuales: {patrones_str}
+Acciones urgentes detectadas: {acciones_urgentes}
 
 Responde ÚNICAMENTE con este JSON:
 {{
-  "conclusion_general": "conclusión específica de 2-3 oraciones considerando emociones y patrones conductuales",
-  "recomendacion_general": "recomendación concreta de 2-3 oraciones adaptada al contexto"
+  "conclusion_general": "síntesis ejecutiva de 3-4 oraciones adaptada al tipo de contenido analizado",
+  "acciones_prioritarias": ["acción concreta 1", "acción concreta 2", "acción concreta 3"],
+  "recomendacion_general": "recomendación estratégica de 2-3 oraciones"
 }}"""
 
     try:
@@ -257,23 +324,31 @@ Responde ÚNICAMENTE con este JSON:
             model="llama-3.1-8b-instant",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.3,
-            max_tokens=300
+            max_tokens=400
         )
         contenido = respuesta.choices[0].message.content.strip()
-        contenido = contenido.replace("```json", "").replace("```", "").strip()
+        contenido = contenido.replace("```json","").replace("```","").strip()
         resultado = json.loads(contenido)
         conclusion    = resultado.get("conclusion_general", "Análisis completado.")
-        recomendacion = resultado.get("recomendacion_general", "Revisar resultados detallados.")
+        acciones      = resultado.get("acciones_prioritarias", [])
+        recomendacion = resultado.get("recomendacion_general", "Revisar resultados.")
     except Exception:
-        conclusion    = "Se completó el análisis de las respuestas válidas."
+        conclusion    = "Se completó el análisis de las entradas."
+        acciones      = acciones_urgentes[:3]
         recomendacion = "Revisa los resultados detallados para tomar decisiones informadas."
 
     return {
         "emociones":      {"positivas": positivas, "negativas": negativas, "neutras": neutras},
         "niveles_riesgo": {"alto": riesgo_alto, "medio": riesgo_medio, "bajo": riesgo_bajo},
-        "patrones_conductuales": patrones,
-        "conclusion_general":    conclusion,
-        "recomendacion_general": recomendacion
+        "estadisticas_universales": {
+            "tipos_detectados": dict(tipos_detectados.most_common(5)),
+            "dimensiones":      dict(dimensiones.most_common(5)),
+            "urgencias":        dict(urgencias)
+        },
+        "patrones_conductuales":  patrones,
+        "acciones_prioritarias":  acciones,
+        "conclusion_general":     conclusion,
+        "recomendacion_general":  recomendacion
     }
 
 
@@ -375,7 +450,6 @@ def procesar_dataframe(df: pd.DataFrame, contexto: str, filtros: dict = {}) -> O
     if not columnas_respuestas:
         return None
 
-    # Filtros activos
     detectar_irrelevantes = filtros.get("detectar_irrelevantes", True)
     detectar_ofensivas    = filtros.get("detectar_ofensivas", True)
     detectar_alertas      = filtros.get("detectar_alertas", True)
@@ -399,82 +473,97 @@ def procesar_dataframe(df: pd.DataFrame, contexto: str, filtros: dict = {}) -> O
             if identificador is None:
                 continue
 
+            # Recopilar metadatos de columnas cortas (sector, tipo, área, etc.)
+            metadatos = {}
+            for col in df.columns:
+                if col in excluir or col in columnas_respuestas:
+                    continue
+                val = fila.get(col)
+                if pd.notna(val) and str(val).strip() not in ["", "nan", "[]"]:
+                    metadatos[str(col)] = str(val)
+
             pos = neg = neu = 0
-            riesgo_max       = "bajo"
+            riesgo_max    = "bajo"
+            urgencia_max  = "baja"
             interpretaciones = []
+            resumenes        = []
 
             for col in columnas_respuestas:
                 texto = str(fila[col]) if pd.notna(fila.get(col)) else ""
                 if len(texto.strip()) < 3:
                     continue
 
-                # Clasificar respuesta primero
                 clasificacion = clasificar_respuesta(texto, contexto)
                 categoria     = clasificacion["categoria"]
                 razon         = clasificacion["razon"]
-
-                entrada_filtrada = {
-                    "persona": identificador,
-                    "texto":   texto,
-                    "razon":   razon
-                }
+                entrada_filtrada = {"persona": identificador, "texto": texto[:200], "razon": razon}
 
                 if categoria == "irrelevante" and detectar_irrelevantes:
-                    irrelevantes.append(entrada_filtrada)
-                    continue
+                    irrelevantes.append(entrada_filtrada); continue
                 elif categoria == "ofensiva" and detectar_ofensivas:
-                    ofensivas.append(entrada_filtrada)
-                    continue
+                    ofensivas.append(entrada_filtrada); continue
                 elif categoria == "alerta" and detectar_alertas:
-                    alertas.append(entrada_filtrada)
-                    continue
+                    alertas.append(entrada_filtrada); continue
 
-                # Analizar respuestas válidas y conductuales
                 todas_las_palabras.extend(extraer_palabras_clave(texto))
-                analisis = analizar_con_groq(texto, contexto)
+                # Pasar metadatos para enriquecer el análisis
+                analisis = analizar_con_groq(texto, contexto, metadatos)
+                analisis["id"] = identificador
                 resultados_validos.append(analisis)
 
-                if analisis_conductual and analisis.get("patron_conductual", "ninguno") != "ninguno":
+                if analisis_conductual and analisis.get("patron_conductual","ninguno") != "ninguno":
                     patrones_contador[analisis["patron_conductual"]] += 1
                     if categoria == "conductual":
                         conductuales.append({**entrada_filtrada, "patron": analisis["patron_conductual"]})
 
-                if analisis["emocion_detectada"] == "positiva": pos += 1
-                elif analisis["emocion_detectada"] == "negativa": neg += 1
-                else: neu += 1
+                # Emociones (si aplica)
+                em = analisis.get("emocion_detectada","no_aplica")
+                if em == "positiva": pos += 1
+                elif em == "negativa": neg += 1
+                elif em == "neutra": neu += 1
 
-                if analisis["nivel_riesgo"] == "alto": riesgo_max = "alto"
-                elif analisis["nivel_riesgo"] == "medio" and riesgo_max != "alto": riesgo_max = "medio"
-                interpretaciones.append(analisis["interpretacion"])
+                if analisis.get("nivel_riesgo") == "alto": riesgo_max = "alto"
+                elif analisis.get("nivel_riesgo") == "medio" and riesgo_max != "alto": riesgo_max = "medio"
 
-            if pos + neg + neu == 0:
+                if analisis.get("urgencia") == "alta": urgencia_max = "alta"
+                elif analisis.get("urgencia") == "media" and urgencia_max != "alta": urgencia_max = "media"
+
+                interpretaciones.append(analisis.get("interpretacion",""))
+                if analisis.get("resumen"): resumenes.append(analisis["resumen"])
+
+            if not interpretaciones and not resumenes:
                 continue
 
-            perfil = perfil_persona(pos, neg, neu)
+            perfil = perfil_persona(pos, neg, neu) if (pos+neg+neu) > 0 else "no emocional"
             personas_resultado.append({
                 "persona":              identificador,
+                "tipo_contenido":       resultados_validos[-1].get("tipo_contenido","") if resultados_validos else "",
+                "resumen":              resumenes[0] if resumenes else interpretaciones[0] if interpretaciones else "",
+                "urgencia":             urgencia_max,
+                "accion_recomendada":   resultados_validos[-1].get("accion_recomendada","") if resultados_validos else "",
                 "respuestas_positivas": pos,
                 "respuestas_negativas": neg,
                 "respuestas_neutras":   neu,
                 "perfil_emocional":     perfil,
                 "nivel_riesgo_general": riesgo_max,
-                "resumen_respuestas":   " | ".join(interpretaciones[:2])
             })
 
-        temas   = [p for p, _ in Counter(todas_las_palabras).most_common(10)]
-        resumen = generar_resumen_lote(resultados_validos, contexto, temas, dict(patrones_contador))
+        temas            = [p for p, _ in Counter(todas_las_palabras).most_common(10)]
+        grupos_tematicos = agrupar_por_temas(resultados_validos)
+        resumen          = generar_resumen_lote(resultados_validos, contexto, temas, dict(patrones_contador))
 
         grupo_positivo = [p["persona"] for p in personas_resultado if "positiv" in p["perfil_emocional"]]
         grupo_negativo = [p["persona"] for p in personas_resultado if "negativ" in p["perfil_emocional"]]
-        grupo_mixto    = [p["persona"] for p in personas_resultado if p["perfil_emocional"] in ["mixto","sin datos"]]
+        grupo_mixto    = [p["persona"] for p in personas_resultado if p["perfil_emocional"] in ["mixto","sin datos","no emocional"]]
 
         return {
             "columna_nombre_detectada":     str(col_nombre) if col_nombre else None,
             "columna_id_detectada":         str(col_id)     if col_id     else None,
             "total_personas":               len(personas_resultado),
             "total_respuestas_validas":     len(resultados_validos),
-            "total_respuestas_filtradas":   len(irrelevantes) + len(ofensivas) + len(alertas),
+            "total_respuestas_filtradas":   len(irrelevantes)+len(ofensivas)+len(alertas),
             "temas_principales_detectados": temas,
+            "grupos_tematicos":             grupos_tematicos,
             "analisis_por_persona":         personas_resultado,
             "grupos": {
                 "perfil_positivo": grupo_positivo,
@@ -491,16 +580,14 @@ def procesar_dataframe(df: pd.DataFrame, contexto: str, filtros: dict = {}) -> O
         }
 
     else:
-        # Sin identidad — análisis general con filtrado
         for col in columnas_respuestas:
             for texto in df[col].dropna().astype(str).tolist():
                 if len(texto.strip()) < 3:
                     continue
-
                 clasificacion = clasificar_respuesta(texto, contexto)
                 categoria     = clasificacion["categoria"]
                 razon         = clasificacion["razon"]
-                entrada        = {"texto": texto, "razon": razon}
+                entrada       = {"texto": texto[:200], "razon": razon}
 
                 if categoria == "irrelevante" and detectar_irrelevantes:
                     irrelevantes.append(entrada); continue
@@ -518,15 +605,17 @@ def procesar_dataframe(df: pd.DataFrame, contexto: str, filtros: dict = {}) -> O
                     if categoria == "conductual":
                         conductuales.append({**entrada, "patron": analisis["patron_conductual"]})
 
-        temas   = [p for p, _ in Counter(todas_las_palabras).most_common(10)]
-        resumen = generar_resumen_lote(resultados_validos, contexto, temas, dict(patrones_contador))
+        temas            = [p for p, _ in Counter(todas_las_palabras).most_common(10)]
+        grupos_tematicos = agrupar_por_temas(resultados_validos)
+        resumen          = generar_resumen_lote(resultados_validos, contexto, temas, dict(patrones_contador))
 
         return {
             "columna_nombre_detectada":     None,
             "columna_id_detectada":         None,
             "total_respuestas_validas":     len(resultados_validos),
-            "total_respuestas_filtradas":   len(irrelevantes) + len(ofensivas) + len(alertas),
+            "total_respuestas_filtradas":   len(irrelevantes)+len(ofensivas)+len(alertas),
             "temas_principales_detectados": temas,
+            "grupos_tematicos":             grupos_tematicos,
             "respuestas_filtradas": {
                 "irrelevantes": irrelevantes,
                 "ofensivas":    ofensivas,
