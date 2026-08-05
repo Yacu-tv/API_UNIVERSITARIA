@@ -264,7 +264,7 @@
       <p>Universidad Autónoma del Estado de México</p>
     </div>
   </div>
-  <div class="header-version">v4.1.0 — LLaMA 3 · Groq</div>
+  <div class="header-version">v5.0.0 — LLaMA 3 · Groq</div>
 </header>
 
 <main>
@@ -553,81 +553,135 @@
     return html;
   }
 
-  function mostrarResultadosLote(data) {
-    const el    = document.getElementById('contenido-resultados');
-    const temas = data.temas_principales_detectados || [];
+  // ── HELPERS HTML ─────────────────────────────────────
 
-    el.innerHTML = `
-      <p style="font-size:0.8rem;color:var(--suave);margin-bottom:18px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">
-        ${data.total_respuestas_validas??0} respuestas válidas analizadas ${data.archivo?'— '+data.archivo:''}
-      </p>
-      ${htmlMetricasEmociones(data.emociones||{}, data.niveles_riesgo||{}, data.total_respuestas_validas, data.total_respuestas_filtradas)}
-      ${htmlPatrones(data.patrones_conductuales)}
-      ${temas.length?`<div class="temas-wrap"><h4>Temas principales</h4><div class="temas">${temas.map((t,i)=>`<span class="tema" style="animation-delay:${i*0.05}s">${t}</span>`).join('')}</div></div>`:''}
-      <div class="divider"></div>
-      <div class="conclusion-box"><h4>📋 Conclusión general</h4><p>${data.conclusion_general}</p></div>
-      <div class="conclusion-box oro"><h4>💡 Recomendación</h4><p>${data.recomendacion_general}</p></div>
-      ${data.respuestas_filtradas ? `<div class="seccion-titulo">🔍 Respuestas filtradas</div>${htmlRespuestasFiltradas(data.respuestas_filtradas)}` : ''}
-    `;
+  function htmlAcciones(acciones) {
+    if (!acciones || !acciones.length) return '';
+    return `
+      <div style="background:linear-gradient(135deg,#eaf2fb,#f0f6ff);border-radius:12px;padding:20px;margin-bottom:16px;border-left:4px solid #1a5276">
+        <h4 style="font-size:0.8rem;font-weight:600;color:#1a5276;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px">🎯 Acciones prioritarias recomendadas</h4>
+        ${acciones.map((a,i)=>`
+          <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;background:#fff;border-radius:8px;padding:10px 14px">
+            <div style="background:#1a5276;color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0;margin-top:1px">${i+1}</div>
+            <div style="font-size:0.87rem;color:var(--texto);line-height:1.5">${a}</div>
+          </div>`).join('')}
+      </div>`;
+  }
+
+  function htmlTiposDetectados(data) {
+    const tipos = data.estadisticas_universales?.tipos_detectados || {};
+    const entradas = Object.entries(tipos);
+    if (!entradas.length) return '';
+    return `
+      <div style="margin-bottom:16px">
+        <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">📄 Tipos de contenido detectados</h4>
+        ${entradas.map(([tipo,count])=>`
+          <div style="display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:8px;padding:8px 14px;margin-bottom:6px;border:1px solid #dde8dd">
+            <span style="font-size:0.87rem;color:var(--texto);font-weight:500">${tipo}</span>
+            <span style="background:var(--verde);color:#fff;border-radius:20px;padding:2px 10px;font-size:0.76rem;font-weight:700">${count}</span>
+          </div>`).join('')}
+      </div>`;
+  }
+
+  function htmlGruposTematicos(grupos) {
+    if (!grupos || !grupos.length) return '';
+    const urgColor = {alta:'var(--rojo)',media:'var(--amarillo)',baja:'var(--verde-med)'};
+    return `
+      <div style="margin-bottom:22px">
+        <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px">🗂️ Grupos temáticos (entradas que hablan de lo mismo)</h4>
+        ${grupos.map(g=>`
+          <div style="background:#fff;border:1px solid #dde8dd;border-radius:12px;padding:16px;margin-bottom:10px;border-left:4px solid ${urgColor[g.urgencia_grupo]||'var(--verde)'}">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px">
+              <span style="font-weight:700;font-size:0.95rem;color:var(--verde-oscuro);text-transform:capitalize">🏷️ ${g.tema}</span>
+              <span class="badge ${g.urgencia_grupo}">${g.total} entrada${g.total>1?'s':''} · urgencia ${g.urgencia_grupo}</span>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px">
+              ${g.miembros.map(m=>`<span style="background:var(--verde-claro);border-radius:6px;padding:4px 10px;font-size:0.8rem;color:var(--verde-oscuro);font-weight:500;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${m.resumen}">${m.id}</span>`).join('')}
+            </div>
+          </div>`).join('')}
+      </div>`;
+  }
+
+  function htmlTablaPersonas(personas) {
+    if (!personas || !personas.length) return '';
+    // Detectar si hay datos emocionales o solo universales
+    const tieneEmociones = personas.some(p => (p.respuestas_positivas||0)+(p.respuestas_negativas||0)+(p.respuestas_neutras||0) > 0);
+    return `
+      <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:11px">Detalle por persona / entrada</h4>
+      <div class="tabla-wrap" style="margin-bottom:22px">
+        <table class="tabla">
+          <thead><tr>
+            <th>Persona / ID</th>
+            <th>Tipo de contenido</th>
+            <th>Resumen</th>
+            <th>Urgencia</th>
+            ${tieneEmociones ? '<th>😊</th><th>😟</th><th>Perfil</th>' : ''}
+            <th>Acción recomendada</th>
+          </tr></thead>
+          <tbody>
+            ${personas.map(p=>`<tr>
+              <td><strong>${p.persona}</strong></td>
+              <td style="font-size:0.78rem;color:var(--suave)">${p.tipo_contenido||''}</td>
+              <td style="font-size:0.82rem;max-width:220px;line-height:1.4">${(p.resumen||'').slice(0,120)}${(p.resumen||'').length>120?'...':''}</td>
+              <td><span class="badge ${p.urgencia||'baja'}">${p.urgencia||'baja'}</span></td>
+              ${tieneEmociones ? `
+                <td style="color:var(--verde-med);font-weight:600;text-align:center">${p.respuestas_positivas||0}</td>
+                <td style="color:var(--rojo);font-weight:600;text-align:center">${p.respuestas_negativas||0}</td>
+                <td><span class="badge ${(p.perfil_emocional||'').replace(/ /g,'-')}">${p.perfil_emocional||''}</span></td>` : ''}
+              <td style="font-size:0.78rem;max-width:180px">${(p.accion_recomendada||'').slice(0,100)}${(p.accion_recomendada||'').length>100?'...':''}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`;
+  }
+
+  function htmlContenidoLote(data) {
+    const temas  = data.temas_principales_detectados || [];
+    const grupos = data.grupos || {};
+    let html = '';
+    html += htmlMetricasEmociones(data.emociones||{}, data.niveles_riesgo||{}, data.total_respuestas_validas||data.total_personas, data.total_respuestas_filtradas);
+    html += htmlTiposDetectados(data);
+    html += htmlPatrones(data.patrones_conductuales);
+    if (temas.length) html += `<div class="temas-wrap"><h4>Temas principales</h4><div class="temas">${temas.map((t,i)=>`<span class="tema" style="animation-delay:${i*0.05}s">${t}</span>`).join('')}</div></div>`;
+    html += htmlGruposTematicos(data.grupos_tematicos);
+    html += htmlAcciones(data.acciones_prioritarias);
+    // Grupos emocionales si aplica
+    if (grupos.perfil_positivo || grupos.perfil_negativo) {
+      html += `
+        <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:11px">Clasificación emocional</h4>
+        <div class="grupos-wrap" style="margin-bottom:22px">
+          <div class="grupo-card positivo"><h4>✅ Perfil positivo (${(grupos.perfil_positivo||[]).length})</h4>${(grupos.perfil_positivo||[]).map(p=>`<span class="grupo-persona">${p}</span>`).join('')||'<span style="font-size:0.82rem;color:var(--suave)">Ninguno</span>'}</div>
+          <div class="grupo-card negativo"><h4>⚠️ Perfil negativo (${(grupos.perfil_negativo||[]).length})</h4>${(grupos.perfil_negativo||[]).map(p=>`<span class="grupo-persona">${p}</span>`).join('')||'<span style="font-size:0.82rem;color:var(--suave)">Ninguno</span>'}</div>
+          <div class="grupo-card mixto"><h4>🔄 Perfil mixto (${(grupos.perfil_mixto||[]).length})</h4>${(grupos.perfil_mixto||[]).map(p=>`<span class="grupo-persona">${p}</span>`).join('')||'<span style="font-size:0.82rem;color:var(--suave)">Ninguno</span>'}</div>
+        </div>`;
+    }
+    html += htmlTablaPersonas(data.analisis_por_persona);
+    html += `<div class="divider"></div>`;
+    html += `<div class="conclusion-box"><h4>📋 Conclusión general</h4><p>${data.conclusion_general||''}</p></div>`;
+    html += `<div class="conclusion-box oro"><h4>💡 Recomendación estratégica</h4><p>${data.recomendacion_general||''}</p></div>`;
+    if (data.respuestas_filtradas) html += `<div class="seccion-titulo">🔍 Entradas filtradas</div>${htmlRespuestasFiltradas(data.respuestas_filtradas)}`;
+    return html;
+  }
+
+  function mostrarResultadosLote(data) {
+    const el = document.getElementById('contenido-resultados');
+    let tags = '';
+    if (data.columna_nombre_detectada) tags += `<div class="info-tag">👤 Nombre: <strong>${data.columna_nombre_detectada}</strong></div>`;
+    if (data.columna_id_detectada)     tags += `<div class="info-tag">🪪 ID: <strong>${data.columna_id_detectada}</strong></div>`;
+    if (data.archivo)                  tags += `<div class="info-tag">📄 ${data.archivo}</div>`;
+    tags += `<div class="info-tag">📝 ${data.total_respuestas_validas||0} válidas · ${data.total_respuestas_filtradas||0} filtradas</div>`;
+    el.innerHTML = `<div class="info-deteccion">${tags}</div>${htmlContenidoLote(data)}`;
     mostrarYScrollear();
   }
 
   function mostrarResultadosPorPersona(data) {
-    const el       = document.getElementById('contenido-resultados');
-    const temas    = data.temas_principales_detectados || [];
-    const personas = data.analisis_por_persona || [];
-    const grupos   = data.grupos || {};
-
-    let tagsDeteccion = '';
-    if (data.columna_nombre_detectada) tagsDeteccion += `<div class="info-tag">👤 Nombre: <strong>${data.columna_nombre_detectada}</strong></div>`;
-    if (data.columna_id_detectada)     tagsDeteccion += `<div class="info-tag">🪪 ID: <strong>${data.columna_id_detectada}</strong></div>`;
-    if (data.archivo)                  tagsDeteccion += `<div class="info-tag">📄 ${data.archivo}</div>`;
-    tagsDeteccion += `<div class="info-tag">👥 ${data.total_personas} personas · ${data.total_respuestas_validas} válidas · ${data.total_respuestas_filtradas||0} filtradas</div>`;
-
-    el.innerHTML = `
-      <div class="info-deteccion">${tagsDeteccion}</div>
-      ${htmlMetricasEmociones(data.emociones||{}, data.niveles_riesgo||{}, data.total_respuestas_validas, data.total_respuestas_filtradas)}
-      ${htmlPatrones(data.patrones_conductuales)}
-
-      <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:11px;">Clasificación por perfil</h4>
-      <div class="grupos-wrap" style="margin-bottom:22px">
-        <div class="grupo-card positivo">
-          <h4>✅ Perfil positivo (${(grupos.perfil_positivo||[]).length})</h4>
-          ${(grupos.perfil_positivo||[]).map(p=>`<span class="grupo-persona">${p}</span>`).join('')||'<span style="font-size:0.82rem;color:var(--suave)">Ninguno</span>'}
-        </div>
-        <div class="grupo-card negativo">
-          <h4>⚠️ Perfil negativo (${(grupos.perfil_negativo||[]).length})</h4>
-          ${(grupos.perfil_negativo||[]).map(p=>`<span class="grupo-persona">${p}</span>`).join('')||'<span style="font-size:0.82rem;color:var(--suave)">Ninguno</span>'}
-        </div>
-        <div class="grupo-card mixto">
-          <h4>🔄 Perfil mixto (${(grupos.perfil_mixto||[]).length})</h4>
-          ${(grupos.perfil_mixto||[]).map(p=>`<span class="grupo-persona">${p}</span>`).join('')||'<span style="font-size:0.82rem;color:var(--suave)">Ninguno</span>'}
-        </div>
-      </div>
-
-      <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:11px;">Detalle por persona</h4>
-      <div class="tabla-wrap" style="margin-bottom:22px">
-        <table class="tabla">
-          <thead><tr><th>Persona</th><th>😊</th><th>😟</th><th>😐</th><th>Perfil</th><th>Riesgo</th></tr></thead>
-          <tbody>
-            ${personas.map(p=>`<tr>
-              <td><strong>${p.persona}</strong></td>
-              <td style="color:var(--verde-med);font-weight:600;text-align:center">${p.respuestas_positivas}</td>
-              <td style="color:var(--rojo);font-weight:600;text-align:center">${p.respuestas_negativas}</td>
-              <td style="color:var(--amarillo);font-weight:600;text-align:center">${p.respuestas_neutras}</td>
-              <td><span class="badge ${p.perfil_emocional.replace(/ /g,'-')}">${p.perfil_emocional}</span></td>
-              <td><span class="badge ${p.nivel_riesgo_general}">${p.nivel_riesgo_general}</span></td>
-            </tr>`).join('')}
-          </tbody>
-        </table>
-      </div>
-
-      ${temas.length?`<div class="temas-wrap"><h4>Temas principales</h4><div class="temas">${temas.map((t,i)=>`<span class="tema" style="animation-delay:${i*0.05}s">${t}</span>`).join('')}</div></div>`:''}
-      <div class="divider"></div>
-      <div class="conclusion-box"><h4>📋 Conclusión general</h4><p>${data.conclusion_general}</p></div>
-      <div class="conclusion-box oro"><h4>💡 Recomendación</h4><p>${data.recomendacion_general}</p></div>
-      ${data.respuestas_filtradas?`<div class="seccion-titulo">🔍 Respuestas filtradas</div>${htmlRespuestasFiltradas(data.respuestas_filtradas)}`:''}
-    `;
+    const el = document.getElementById('contenido-resultados');
+    let tags = '';
+    if (data.columna_nombre_detectada) tags += `<div class="info-tag">👤 Nombre: <strong>${data.columna_nombre_detectada}</strong></div>`;
+    if (data.columna_id_detectada)     tags += `<div class="info-tag">🪪 ID: <strong>${data.columna_id_detectada}</strong></div>`;
+    if (data.archivo)                  tags += `<div class="info-tag">📄 ${data.archivo}</div>`;
+    tags += `<div class="info-tag">👥 ${data.total_personas} personas · ${data.total_respuestas_validas} válidas · ${data.total_respuestas_filtradas||0} filtradas</div>`;
+    el.innerHTML = `<div class="info-deteccion">${tags}</div>${htmlContenidoLote(data)}`;
     mostrarYScrollear();
   }
 
@@ -642,103 +696,43 @@
 
   function renderizarVistaHojas(nombreArchivo) {
     const el = document.getElementById('contenido-resultados');
-
     const tabsHtml = hojasData.map((hoja, i) => {
-      const numFiltradas = hoja.respuestas_filtradas
-        ? (hoja.respuestas_filtradas.irrelevantes||[]).length + (hoja.respuestas_filtradas.ofensivas||[]).length
-          + (hoja.respuestas_filtradas.alertas||[]).length
-        : 0;
-      const numAlertas = hoja.respuestas_filtradas ? (hoja.respuestas_filtradas.alertas||[]).length : 0;
-      return `
-        <button class="hoja-tab ${i===hojaActivaIndex?'hoja-tab-activa':''}" onclick="irAHoja(${i})">
-          📑 ${hoja.nombre_hoja || 'Hoja ' + (i+1)}
-          ${numAlertas > 0 ? `<span class="hoja-tab-badge" style="background:var(--rojo);color:white">🔴 ${numAlertas}</span>` : ''}
-        </button>
-      `;
+      const numAlertas = (hoja.respuestas_filtradas?.alertas||[]).length;
+      return `<button class="hoja-tab ${i===hojaActivaIndex?'hoja-tab-activa':''}" onclick="irAHoja(${i})">
+        📑 ${hoja.nombre_hoja || 'Hoja '+(i+1)}
+        ${numAlertas > 0 ? `<span class="hoja-tab-badge" style="background:var(--rojo);color:white">🔴 ${numAlertas}</span>` : ''}
+      </button>`;
     }).join('');
-
     el.innerHTML = `
-      <p style="font-size:0.8rem;color:var(--suave);margin-bottom:14px;font-weight:600;">
-        📄 ${nombreArchivo} — ${hojasData.length} hoja${hojasData.length>1?'s':''} detectada${hojasData.length>1?'s':''}
-      </p>
+      <p style="font-size:0.8rem;color:var(--suave);margin-bottom:14px;font-weight:600">📄 ${nombreArchivo} — ${hojasData.length} hoja${hojasData.length>1?'s':''}</p>
       <div class="hojas-nav-wrap">${tabsHtml}</div>
-      <div class="hojas-contenido-wrap" id="hoja-contenido-actual"></div>
-    `;
-
+      <div class="hojas-contenido-wrap" id="hoja-contenido-actual"></div>`;
     renderizarContenidoHoja();
     mostrarYScrollear();
   }
 
   function irAHoja(index) {
     hojaActivaIndex = index;
-    document.querySelectorAll('.hoja-tab').forEach((t, i) => t.classList.toggle('hoja-tab-activa', i === index));
+    document.querySelectorAll('.hoja-tab').forEach((t,i) => t.classList.toggle('hoja-tab-activa', i===index));
     renderizarContenidoHoja();
-    document.getElementById('hoja-contenido-actual').scrollIntoView({behavior:'smooth', block:'nearest'});
+    document.getElementById('hoja-contenido-actual').scrollIntoView({behavior:'smooth',block:'nearest'});
   }
 
   function renderizarContenidoHoja() {
     const hoja = hojasData[hojaActivaIndex];
     const wrap = document.getElementById('hoja-contenido-actual');
-    const temas = hoja.temas_principales_detectados || [];
-
     let html = `
       <div class="hoja-pagina-info">
-        <span class="hoja-titulo">📑 ${hoja.nombre_hoja || 'Hoja ' + (hojaActivaIndex+1)}</span>
+        <span class="hoja-titulo">📑 ${hoja.nombre_hoja || 'Hoja '+(hojaActivaIndex+1)}</span>
         <div class="hoja-pagina-nav">
-          <button class="hoja-pagina-btn" onclick="irAHoja(${hojaActivaIndex-1})" ${hojaActivaIndex===0?'disabled':''} title="Hoja anterior">‹</button>
+          <button class="hoja-pagina-btn" onclick="irAHoja(${hojaActivaIndex-1})" ${hojaActivaIndex===0?'disabled':''}>‹</button>
           <span class="hoja-pagina-contador">${hojaActivaIndex+1} / ${hojasData.length}</span>
-          <button class="hoja-pagina-btn" onclick="irAHoja(${hojaActivaIndex+1})" ${hojaActivaIndex===hojasData.length-1?'disabled':''} title="Hoja siguiente">›</button>
+          <button class="hoja-pagina-btn" onclick="irAHoja(${hojaActivaIndex+1})" ${hojaActivaIndex===hojasData.length-1?'disabled':''}>›</button>
         </div>
-      </div>
-    `;
-
-    if (hoja.analisis_por_persona && hoja.analisis_por_persona.length > 0) {
-      const grupos = hoja.grupos || {};
-      html += `<div class="info-deteccion">
-        ${hoja.columna_nombre_detectada?`<div class="info-tag">👤 Nombre: <strong>${hoja.columna_nombre_detectada}</strong></div>`:''}
-        ${hoja.columna_id_detectada?`<div class="info-tag">🪪 ID: <strong>${hoja.columna_id_detectada}</strong></div>`:''}
-        <div class="info-tag">👥 ${hoja.total_personas} personas · ${hoja.total_respuestas_validas} válidas · ${hoja.total_respuestas_filtradas||0} filtradas</div>
       </div>`;
-      html += htmlMetricasEmociones(hoja.emociones||{}, hoja.niveles_riesgo||{});
-      html += htmlPatrones(hoja.patrones_conductuales);
-      html += `
-        <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:11px;">Clasificación por perfil</h4>
-        <div class="grupos-wrap" style="margin-bottom:22px">
-          <div class="grupo-card positivo"><h4>✅ Perfil positivo (${(grupos.perfil_positivo||[]).length})</h4>${(grupos.perfil_positivo||[]).map(p=>`<span class="grupo-persona">${p}</span>`).join('')||'<span style="font-size:0.82rem;color:var(--suave)">Ninguno</span>'}</div>
-          <div class="grupo-card negativo"><h4>⚠️ Perfil negativo (${(grupos.perfil_negativo||[]).length})</h4>${(grupos.perfil_negativo||[]).map(p=>`<span class="grupo-persona">${p}</span>`).join('')||'<span style="font-size:0.82rem;color:var(--suave)">Ninguno</span>'}</div>
-          <div class="grupo-card mixto"><h4>🔄 Perfil mixto (${(grupos.perfil_mixto||[]).length})</h4>${(grupos.perfil_mixto||[]).map(p=>`<span class="grupo-persona">${p}</span>`).join('')||'<span style="font-size:0.82rem;color:var(--suave)">Ninguno</span>'}</div>
-        </div>
-        <h4 style="font-size:0.8rem;font-weight:600;color:var(--suave);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:11px;">Detalle por persona</h4>
-        <div class="tabla-wrap" style="margin-bottom:22px">
-          <table class="tabla">
-            <thead><tr><th>Persona</th><th>😊</th><th>😟</th><th>😐</th><th>Perfil</th><th>Riesgo</th></tr></thead>
-            <tbody>${hoja.analisis_por_persona.map(p=>`<tr>
-              <td><strong>${p.persona}</strong></td>
-              <td style="color:var(--verde-med);font-weight:600;text-align:center">${p.respuestas_positivas}</td>
-              <td style="color:var(--rojo);font-weight:600;text-align:center">${p.respuestas_negativas}</td>
-              <td style="color:var(--amarillo);font-weight:600;text-align:center">${p.respuestas_neutras}</td>
-              <td><span class="badge ${p.perfil_emocional.replace(/ /g,'-')}">${p.perfil_emocional}</span></td>
-              <td><span class="badge ${p.nivel_riesgo_general}">${p.nivel_riesgo_general}</span></td>
-            </tr>`).join('')}</tbody>
-          </table>
-        </div>
-      `;
-    } else {
-      html += htmlMetricasEmociones(hoja.emociones||{}, hoja.niveles_riesgo||{}, hoja.total_respuestas_validas, hoja.total_respuestas_filtradas);
-      html += htmlPatrones(hoja.patrones_conductuales);
-    }
-
-    if (temas.length) html += `<div class="temas-wrap"><h4>Temas principales</h4><div class="temas">${temas.map((t,i)=>`<span class="tema" style="animation-delay:${i*0.05}s">${t}</span>`).join('')}</div></div>`;
-
-    html += `<div class="conclusion-box"><h4>📋 Conclusión</h4><p>${hoja.conclusion_general}</p></div>`;
-    html += `<div class="conclusion-box oro"><h4>💡 Recomendación</h4><p>${hoja.recomendacion_general}</p></div>`;
-
-    if (hoja.respuestas_filtradas) {
-      html += `<div class="seccion-titulo">🔍 Respuestas filtradas en esta hoja</div>${htmlRespuestasFiltradas(hoja.respuestas_filtradas)}`;
-    }
-
+    html += htmlContenidoLote(hoja);
     wrap.innerHTML = html;
-  }
+  }  
 
   function mostrarResultadoIndividual(data, texto) {
     const el = document.getElementById('contenido-resultados');
